@@ -46,7 +46,13 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val fullName = "${user?.family.orEmpty()} ${user?.name.orEmpty()} ${user?.patronymic.orEmpty()}".trim()
+            val fullName = buildString {
+                append(user?.family.orEmpty())
+                val name = user?.name.orEmpty()
+                val patronymic = user?.patronymic.orEmpty()
+                if (name.isNotEmpty()) append(" ${name.first()}.")
+                if (patronymic.isNotEmpty()) append(" ${patronymic.first()}.")
+            }
 
             Text(
                 text = fullName,
