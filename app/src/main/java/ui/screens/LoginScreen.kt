@@ -20,13 +20,15 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.*
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
 import ru.xaxaton.startrainer.utils.*
+import androidx.compose.material.icons.filled.ArrowBack
 
 @Composable
 fun LoginScreen(
     onBackClick: () -> Unit,
     users: List<SimpleUser> = emptyList(),
     onLoginSuccess: (SimpleUser) -> Unit = {},
-    onUsersUpdate: (List<SimpleUser>) -> Unit = {}
+    onUsersUpdate: (List<SimpleUser>) -> Unit = {},
+    onPasswordRecoveryClick: () -> Unit // ✅ новая функция для перехода на восстановление
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -34,7 +36,6 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
-    var showResetDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -43,6 +44,21 @@ fun LoginScreen(
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
+
+        // 🔹 Стрелка "Назад" в левом верхнем углу
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Назад",
+                tint = Color.Black,
+                modifier = Modifier.size(48.dp)
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -107,7 +123,6 @@ fun LoginScreen(
             Button(
                 onClick = {
                     val user = users.find { it.email.trim().equals(email.trim(), ignoreCase = true) }
-
                     message = when {
                         user == null -> "Пользователь не найден"
                         !verifyPassword(password, user.passwordHash, user.salt) -> "Неверный пароль"
@@ -131,9 +146,9 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 🔹 Кнопка "Восстановить пароль"
+            // 🔹 Кнопка "Восстановить пароль" теперь перенаправляет на экран восстановления
             Button(
-                onClick = { showResetDialog = true },
+                onClick = onPasswordRecoveryClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = CreamWhite,
                     contentColor = Color.Black
@@ -144,23 +159,6 @@ fun LoginScreen(
                 Text("Восстановить пароль", style = MaterialTheme.typography.bodyMedium)
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 🔹 Кнопка "Назад"
-            Button(
-                onClick = onBackClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text("Назад", style = MaterialTheme.typography.titleMedium)
-            }
-
             if (message.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -169,15 +167,6 @@ fun LoginScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-        }
-
-        if (showResetDialog) {
-            PasswordResetDialog(
-                users = users,
-                onDismiss = { showResetDialog = false },
-                onUsersUpdate = onUsersUpdate,
-                onMessage = { message = it }
-            )
         }
     }
 }
