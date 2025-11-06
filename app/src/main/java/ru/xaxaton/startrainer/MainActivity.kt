@@ -30,32 +30,31 @@ fun NavigationApp() {
     var users by remember { mutableStateOf(listOf<SimpleUser>()) }
     var currentUser by remember { mutableStateOf<SimpleUser?>(null) }
 
-    // Для восстановления пароля
     var recoveryEmail by remember { mutableStateOf("") }
     var generatedCode by remember { mutableStateOf("") }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         when (currentScreen) {
 
-            // 🟡 Стартовый экран
+            // Старт
             "start" -> StartScreen(
                 onRegisterClick = { currentScreen = "register" },
                 onLoginClick = { currentScreen = "login" },
                 modifier = Modifier.padding(innerPadding)
             )
 
-            // 🟢 Регистрация
+            // Регистрация
             "register" -> RegistrationScreen(
                 onBackClick = { currentScreen = "start" },
                 existingUsers = users,
                 onRegister = { newUser ->
                     users = users + newUser
                     currentUser = newUser
-                    currentScreen = "home" // автоматический вход
+                    currentScreen = "home"
                 }
             )
 
-            // 🔵 Вход
+            // Вход
             "login" -> LoginScreen(
                 onBackClick = { currentScreen = "start" },
                 users = users,
@@ -63,15 +62,11 @@ fun NavigationApp() {
                     currentUser = loggedInUser
                     currentScreen = "home"
                 },
-                onUsersUpdate = { updatedList ->
-                    users = updatedList
-                },
-                onPasswordRecoveryClick = {
-                    currentScreen = "password_recovery"
-                }
+                onUsersUpdate = { updatedList -> users = updatedList },
+                onPasswordRecoveryClick = { currentScreen = "password_recovery" }
             )
 
-            // 🟣 Ввод почты для восстановления
+            // Восстановление — ввод почты
             "password_recovery" -> PasswordRecoveryScreen(
                 onBackClick = { currentScreen = "login" },
                 users = users,
@@ -82,32 +77,36 @@ fun NavigationApp() {
                 }
             )
 
-            // 🟠 Ввод кода подтверждения
+            // Ввод кода
             "password_recovery_code" -> PasswordRecoveryCodeScreen(
                 email = recoveryEmail,
                 sentCode = generatedCode,
                 onBackClick = { currentScreen = "password_recovery" },
-                onCodeVerified = {
-                    currentScreen = "password_recovery_new_password"
-                }
+                onCodeVerified = { currentScreen = "password_recovery_new_password" }
             )
 
-            // 🔴 Ввод нового пароля
+            // Новый пароль
             "password_recovery_new_password" -> PasswordRecoveryNewPasswordScreen(
                 onBackClick = { currentScreen = "login" },
                 users = users,
                 onPasswordChanged = { updatedUsers ->
                     users = updatedUsers
-                    currentScreen = "start" // возвращаемся на главный экран
+                    currentScreen = "start"
                 }
             )
 
-            // 🟢 Домашняя страница после входа
+            // Домашняя страница
             "home" -> HomeScreen(
                 user = currentUser,
                 onLogout = {
                     currentUser = null
                     currentScreen = "start"
+                },
+                onResultsClick = {
+                    // пока заглушка
+                },
+                onEditProfileClick = {
+                    // пока заглушка
                 }
             )
         }
