@@ -26,6 +26,7 @@ import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
 import ru.xaxaton.startrainer.ui.theme.STARTrainerTheme
 import ru.xaxaton.startrainer.utils.hashPasswordWithSalt
+import androidx.compose.material.icons.filled.ArrowBack
 
 data class SimpleUser(
     val family: String,
@@ -57,8 +58,24 @@ fun RegistrationScreen(
             .fillMaxSize()
             .background(colorScheme.primary)
     ) {
+        // Волны
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
+
+        // Стрелка "Назад" в левом верхнем углу на волне
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 32.dp) // сдвигаем ниже
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Назад",
+                tint = Color.Black,
+                modifier = Modifier.size(48.dp) // увеличиваем размер стрелки
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -171,22 +188,6 @@ fun RegistrationScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Зарегистрироваться", style = MaterialTheme.typography.titleMedium)
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Button(
-                onClick = onBackClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Назад", style = MaterialTheme.typography.titleMedium)
             }
 
             if (errorMessage != null) {
