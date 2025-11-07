@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ fun TrainingLevelScreen(
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
+        // Кнопка "Назад"
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -44,6 +47,7 @@ fun TrainingLevelScreen(
             )
         }
 
+        // Контент — кнопки уровней
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,18 +84,39 @@ fun TrainingLevelScreen(
             ) { Text("Сложный") }
         }
 
-        IconButton(
-            onClick = onHomeClick,
+        // Нижнее навигационное меню
+        Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .padding(vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Filled.Home,
-                contentDescription = "Домашняя страница",
-                tint = Color.Black,
-                modifier = Modifier.size(36.dp)
-            )
+            IconButton(onClick = onHomeClick) {
+                Icon(
+                    imageVector = Icons.Filled.Home,
+                    contentDescription = "Домашняя страница",
+                    tint = Color.Black,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+            IconButton(onClick = { /* TODO: Чат */ }) {
+                Icon(
+                    imageVector = Icons.Filled.ChatBubbleOutline,
+                    contentDescription = "Чат",
+                    tint = Color.Black,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+            IconButton(onClick = { /* TODO: Тесты */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Description,
+                    contentDescription = "Тесты",
+                    tint = Color.Black,
+                    modifier = Modifier.size(36.dp)
+                )
+            }
         }
     }
 }

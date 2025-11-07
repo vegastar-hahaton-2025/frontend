@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
@@ -14,14 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
+import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
 
 @Composable
 fun TestsChooseScreen(
-    onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
+    onGroupsClick: () -> Unit,
     onTrainingClick: () -> Unit,
     onTestingClick: () -> Unit
 ) {
@@ -32,20 +31,6 @@ fun TestsChooseScreen(
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
-
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Назад",
-                tint = Color.Black,
-                modifier = Modifier.size(48.dp)
-            )
-        }
 
         Column(
             modifier = Modifier
@@ -64,9 +49,7 @@ fun TestsChooseScreen(
                     containerColor = CreamWhite,
                     contentColor = Color.Black
                 )
-            ) {
-                Text("Обучение")
-            }
+            ) { Text("Обучение") }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -80,9 +63,7 @@ fun TestsChooseScreen(
                     containerColor = CreamWhite,
                     contentColor = Color.Black
                 )
-            ) {
-                Text("Тестирование")
-            }
+            ) { Text("Тестирование") }
         }
 
         Row(
@@ -101,15 +82,15 @@ fun TestsChooseScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* TODO: Группа */ }) {
+            IconButton(onClick = onGroupsClick) {
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
-                    contentDescription = "Группа",
+                    contentDescription = "Группы",
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { }) {
+            IconButton(onClick = onTestingClick) {
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",

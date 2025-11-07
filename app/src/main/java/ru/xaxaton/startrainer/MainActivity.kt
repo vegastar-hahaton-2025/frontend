@@ -31,6 +31,40 @@
         var currentUser by remember { mutableStateOf<SimpleUser?>(null) }
         var recoveryEmail by remember { mutableStateOf("") }
         var generatedCode by remember { mutableStateOf("") }
+        var groups by remember { mutableStateOf(listOf<Group>()) }
+        
+        // Функция генерации кода для группы
+        fun generateGroupCode(): String {
+            val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            return (1..6).map { chars.random() }.joinToString("")
+        }
+        
+        // Функция создания группы
+        fun createGroup(name: String, creatorEmail: String) {
+            val newGroup = Group(
+                id = java.util.UUID.randomUUID().toString(),
+                name = name,
+                creatorEmail = creatorEmail,
+                joinCode = generateGroupCode(),
+                members = listOf(creatorEmail) // создатель автоматически становится участником
+            )
+            groups = groups + newGroup
+        }
+        
+        // Функция вступления в группу по коду
+        fun joinGroupByCode(code: String, userEmail: String): Boolean {
+            val group = groups.find { it.joinCode == code }
+            if (group != null && !group.members.contains(userEmail) && group.creatorEmail != userEmail) {
+                val updatedGroup = group.copy(members = group.members + userEmail)
+                groups = groups.map { if (it.id == group.id) updatedGroup else it }
+                return true
+            }
+            // Если группа найдена, но пользователь уже участник или создатель
+            if (group != null && (group.members.contains(userEmail) || group.creatorEmail == userEmail)) {
+                return true // уже в группе, считаем успехом
+            }
+            return false // группа не найдена
+        }
 
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             when (currentScreen) {
@@ -88,17 +122,6 @@
                     }
                 )
 
-                "home" -> HomeScreen(
-                    user = currentUser,
-                    onLogout = {
-                        currentUser = null
-                        currentScreen = "start"
-                    },
-                    onResultsClick = { currentScreen = "home" },
-                    onEditProfileClick = { currentScreen = "editProfile" },
-                    onTestsClick = { currentScreen = "tests" }
-                )
-
                 "editProfile" -> EditProfileScreen(
                     user = currentUser,
                     onBackClick = { currentScreen = "home" },
@@ -127,12 +150,61 @@
                     )
                 }
 
-                "tests" -> TestsScreen(
-                    onBackClick = { currentScreen = "home" },
+                "home" -> HomeScreen(
+                    user = currentUser,
+                    onLogout = {
+                        currentUser = null
+                        currentScreen = "start"
+                    },
+                    onResultsClick = { currentScreen = "home" },
+                    onEditProfileClick = { currentScreen = "editProfile" },
+                    onTestsClick = { currentScreen = "tests" },
+                    onGroupsClick = { currentScreen = "groups" }
+                )
+
+                "tests" -> TestsChooseScreen(
                     onHomeClick = { currentScreen = "home" },
+                    onGroupsClick = { currentScreen = "groups" },
                     onTrainingClick = { currentScreen = "trainingLevel" },
                     onTestingClick = { /* TODO: Тестирование */ }
                 )
+
+                "groups" -> currentUser?.let { user ->
+                    GroupsScreen(
+                        onBackClick = { currentScreen = "home" },
+                        onHomeClick = { currentScreen = "home" },
+                        onTestsClick = { currentScreen = "tests" },
+                        onCreateGroupClick = { currentScreen = "createGroup" },
+                        onJoinGroupClick = { currentScreen = "joinGroup" },
+                        groups = groups.filter { 
+                            it.creatorEmail == user.email || it.members.contains(user.email) 
+                        },
+                        userEmail = user.email
+                    )
+                }
+
+                "joinGroup" -> currentUser?.let { user ->
+                    JoinGroupScreen(
+                        onBackClick = { currentScreen = "groups" },
+                        onHomeClick = { currentScreen = "home" },
+                        onTestsClick = { currentScreen = "tests" },
+                        onJoinGroup = { code -> joinGroupByCode(code, user.email) },
+                        userEmail = user.email,
+                        onSuccess = { currentScreen = "groups" }
+                    )
+                }
+
+                "createGroup" -> currentUser?.let { user ->
+                    CreateGroupScreen(
+                        onBackClick = { currentScreen = "groups" },
+                        onHomeClick = { currentScreen = "home" },
+                        onTestsClick = { currentScreen = "tests" },
+                        onCreateGroup = { groupName ->
+                            createGroup(groupName, user.email)
+                            currentScreen = "groups"
+                        }
+                    )
+                }
 
                 "trainingLevel" -> TrainingLevelScreen(
                     onBackClick = { currentScreen = "tests" },
@@ -141,8 +213,6 @@
                         println("Выбран уровень: $level")
                     }
                 )
-
-
             }
         }
     }

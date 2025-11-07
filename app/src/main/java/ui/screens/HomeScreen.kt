@@ -24,7 +24,8 @@ fun HomeScreen(
     onLogout: () -> Unit,
     onResultsClick: () -> Unit,
     onEditProfileClick: () -> Unit,
-    onTestsClick: () -> Unit
+    onTestsClick: () -> Unit,
+    onGroupsClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -76,9 +77,7 @@ fun HomeScreen(
                     containerColor = CreamWhite,
                     contentColor = Color.Black
                 )
-            ) {
-                Text("Мои результаты")
-            }
+            ) { Text("Мои результаты") }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -92,9 +91,7 @@ fun HomeScreen(
                     containerColor = CreamWhite,
                     contentColor = Color.Black
                 )
-            ) {
-                Text("Редактировать профиль")
-            }
+            ) { Text("Редактировать профиль") }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -108,11 +105,10 @@ fun HomeScreen(
                     containerColor = CreamWhite,
                     contentColor = Color.Black
                 )
-            ) {
-                Text("Выйти из профиля")
-            }
+            ) { Text("Выйти из профиля") }
         }
 
+        // Нижнее меню
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -121,7 +117,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onResultsClick) {
+            IconButton(onClick = onResultsClick) { // Домик → Home
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
@@ -129,15 +125,15 @@ fun HomeScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* TODO: Группа */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
-                    contentDescription = "Группа",
+                    contentDescription = "Группы",
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = onTestsClick) {
+            IconButton(onClick = onTestsClick) { // Тесты → Tests
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",

@@ -106,7 +106,7 @@ fun PasswordRecoveryScreen(
 
                     onCodeSent(email, code)
 
-                    message = "Код отправлен на почту (для теста: $code)"
+                    message = "Код отправлен на почту: $code"
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -132,7 +132,7 @@ fun PasswordRecoveryScreen(
             if (shownCode.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Код (для теста): $shownCode",
+                    text = "Код: $shownCode",
                     color = Color.LightGray,
                     style = MaterialTheme.typography.bodySmall
                 )

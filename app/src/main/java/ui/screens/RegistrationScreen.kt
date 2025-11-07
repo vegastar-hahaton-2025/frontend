@@ -37,6 +37,14 @@ data class SimpleUser(
     val salt: String
 )
 
+data class Group(
+    val id: String,
+    val name: String,
+    val creatorEmail: String,
+    val joinCode: String,
+    val members: List<String> = emptyList() // список email участников
+)
+
 @Composable
 fun RegistrationScreen(
     onBackClick: () -> Unit,
