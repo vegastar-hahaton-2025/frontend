@@ -9,9 +9,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,11 +26,12 @@ import ru.xaxaton.startrainer.ui.theme.CreamWhite
 
 @Composable
 fun GroupsScreen(
-    onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
     onCreateGroupClick: () -> Unit,
     onJoinGroupClick: () -> Unit,
+    onEditGroupClick: (String) -> Unit, // groupId
+    onLeaveGroup: (String) -> Unit, // groupId
     groups: List<Group>,
     userEmail: String
 ) {
@@ -139,6 +142,10 @@ fun GroupsScreen(
                     )
                 } else {
                     filteredGroups.forEach { group ->
+                        val isCreator = group.creatorEmail == userEmail
+                        // Создатель уже в списке участников, поэтому просто считаем размер списка
+                        val memberCount = group.members.size
+                        
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -153,18 +160,53 @@ fun GroupsScreen(
                                     .fillMaxWidth()
                                     .padding(16.dp)
                             ) {
-                                Text(
-                                    text = group.name,
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.titleLarge
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = group.name,
+                                        color = Color.Black,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    
+                                    // Иконка троеточия для создателя
+                                    if (isCreator) {
+                                        IconButton(
+                                            onClick = { onEditGroupClick(group.id) },
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.MoreVert,
+                                                contentDescription = "Редактировать группу",
+                                                tint = Color.Black,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                    }
+                                    
+                                    // Иконка крестика для участника (не создателя)
+                                    if (!isCreator) {
+                                        IconButton(
+                                            onClick = { onLeaveGroup(group.id) },
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Close,
+                                                contentDescription = "Выйти из группы",
+                                                tint = Color.Black,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                                
                                 Spacer(modifier = Modifier.height(4.dp))
+                                
                                 Text(
-                                    text = if (group.creatorEmail == userEmail) {
-                                        "Вы создатель"
-                                    } else {
-                                        "Вы участник"
-                                    },
+                                    text = "Участников: $memberCount",
                                     color = Color.Black.copy(alpha = 0.6f),
                                     style = MaterialTheme.typography.bodyMedium
                                 )

@@ -108,9 +108,35 @@ fun RegistrationScreen(
                 unfocusedTextColor = Color.Black
             )
 
+            fun validateEmail(email: String): Boolean {
+                // Проверяем базовый формат
+                if (!Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+                    return false
+                }
+                
+                // Проверяем домен (минимум 2 символа после точки)
+                val parts = email.trim().split("@")
+                if (parts.size != 2) return false
+                
+                val domain = parts[1]
+                val domainParts = domain.split(".")
+                if (domainParts.size < 2) return false
+                
+                // Последняя часть домена должна быть минимум 2 символа
+                val tld = domainParts.last()
+                if (tld.length < 2) return false
+                
+                // Проверяем, что домен содержит только буквы, цифры, точки и дефисы
+                if (!domain.matches(Regex("^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))) {
+                    return false
+                }
+                
+                return true
+            }
+
             fun validateAndRegister() {
                 when {
-                    !Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches() ->
+                    !validateEmail(email) ->
                         errorMessage = "Введите корректный адрес почты"
 
                     existingUsers.any { it.email.equals(email.trim(), ignoreCase = true) } ->

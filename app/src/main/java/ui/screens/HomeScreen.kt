@@ -47,7 +47,7 @@ fun HomeScreen(
                 val name = user?.name.orEmpty()
                 val patronymic = user?.patronymic.orEmpty()
                 if (name.isNotEmpty()) append(" ${name.first()}.")
-                if (patronymic.isNotEmpty()) append(" ${patronymic.first()}.")
+                if (patronymic.isNotEmpty()) append("${patronymic.first()}.")
             }
 
             Text(
