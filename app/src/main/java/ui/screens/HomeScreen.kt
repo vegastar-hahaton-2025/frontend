@@ -30,15 +30,10 @@ fun HomeScreen(
             .fillMaxSize()
             .background(Color(0xFF8D1725))
     ) {
-        // 🔹 Волны сверху и снизу (такие же, как на других экранах)
-        TopCreamWave(
-            modifier = Modifier.align(Alignment.TopCenter)
+        TopCreamWave(modifier = Modifier.align(Alignment.TopCenter)
         )
-        BottomCreamWave(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // 🔹 Центр экрана — блок с именем, почтой и кнопками
         Column(
             modifier = Modifier
                 .fillMaxSize()

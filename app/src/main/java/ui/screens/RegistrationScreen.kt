@@ -45,7 +45,7 @@ fun RegistrationScreen(
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
-    var family by remember { mutableStateOf("") }
+    var surname by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var patronymic by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -58,22 +58,20 @@ fun RegistrationScreen(
             .fillMaxSize()
             .background(colorScheme.primary)
     ) {
-        // Волны
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // Стрелка "Назад" в левом верхнем углу на волне
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 32.dp) // сдвигаем ниже
+                .padding(start = 16.dp, top = 32.dp)
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
                 tint = Color.Black,
-                modifier = Modifier.size(48.dp) // увеличиваем размер стрелки
+                modifier = Modifier.size(48.dp)
             )
         }
 
@@ -113,7 +111,7 @@ fun RegistrationScreen(
                     else -> {
                         val (hashHex, saltHex) = hashPasswordWithSalt(password)
                         val user = SimpleUser(
-                            family.trim(),
+                            surname.trim(),
                             name.trim(),
                             patronymic.trim(),
                             email.trim(),
@@ -126,7 +124,7 @@ fun RegistrationScreen(
             }
 
             val fields = listOf<Pair<String, (String) -> Unit>>(
-                "Фамилия" to { family = it },
+                "Фамилия" to { surname = it },
                 "Имя" to { name = it },
                 "Отчество" to { patronymic = it },
                 "Почта" to { email = it }
@@ -134,7 +132,7 @@ fun RegistrationScreen(
             fields.forEach { (label, onValueChange) ->
                 OutlinedTextField(
                     value = when (label) {
-                        "Фамилия" -> family
+                        "Фамилия" -> surname
                         "Имя" -> name
                         "Отчество" -> patronymic
                         else -> email

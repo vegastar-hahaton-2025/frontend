@@ -27,21 +27,18 @@ fun StartScreen(
             .fillMaxSize()
             .background(colorScheme.primary)
     ) {
-        // 🔹 Верхняя волна — сдвинута немного вверх, чтобы перекрывала верхнюю границу
         TopCreamWave(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .offset(y = (-40).dp) // сдвигаем вверх
+                .offset(y = (-40).dp)
         )
 
-        // 🔹 Нижняя волна — сдвигаем вниз, чтобы перекрыла нижнюю границу
         BottomCreamWave(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = (40).dp) // сдвигаем вниз
+                .offset(y = (40).dp)
         )
 
-        // Контент
         Column(
             modifier = Modifier
                 .fillMaxSize()

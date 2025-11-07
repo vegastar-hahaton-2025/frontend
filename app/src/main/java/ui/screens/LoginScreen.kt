@@ -28,7 +28,7 @@ fun LoginScreen(
     users: List<SimpleUser> = emptyList(),
     onLoginSuccess: (SimpleUser) -> Unit = {},
     onUsersUpdate: (List<SimpleUser>) -> Unit = {},
-    onPasswordRecoveryClick: () -> Unit // ✅ новая функция для перехода на восстановление
+    onPasswordRecoveryClick: () -> Unit
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
@@ -45,7 +45,6 @@ fun LoginScreen(
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // 🔹 Стрелка "Назад" в левом верхнем углу
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -146,7 +145,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 🔹 Кнопка "Восстановить пароль" теперь перенаправляет на экран восстановления
             Button(
                 onClick = onPasswordRecoveryClick,
                 colors = ButtonDefaults.buttonColors(

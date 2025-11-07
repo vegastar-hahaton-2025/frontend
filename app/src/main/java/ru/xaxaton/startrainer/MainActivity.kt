@@ -29,21 +29,18 @@ fun NavigationApp() {
     var currentScreen by remember { mutableStateOf("start") }
     var users by remember { mutableStateOf(listOf<SimpleUser>()) }
     var currentUser by remember { mutableStateOf<SimpleUser?>(null) }
-
     var recoveryEmail by remember { mutableStateOf("") }
     var generatedCode by remember { mutableStateOf("") }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         when (currentScreen) {
 
-            // Старт
             "start" -> StartScreen(
                 onRegisterClick = { currentScreen = "register" },
                 onLoginClick = { currentScreen = "login" },
                 modifier = Modifier.padding(innerPadding)
             )
 
-            // Регистрация
             "register" -> RegistrationScreen(
                 onBackClick = { currentScreen = "start" },
                 existingUsers = users,
@@ -54,7 +51,6 @@ fun NavigationApp() {
                 }
             )
 
-            // Вход
             "login" -> LoginScreen(
                 onBackClick = { currentScreen = "start" },
                 users = users,
@@ -66,7 +62,6 @@ fun NavigationApp() {
                 onPasswordRecoveryClick = { currentScreen = "password_recovery" }
             )
 
-            // Восстановление — ввод почты
             "password_recovery" -> PasswordRecoveryScreen(
                 onBackClick = { currentScreen = "login" },
                 users = users,
@@ -77,7 +72,6 @@ fun NavigationApp() {
                 }
             )
 
-            // Ввод кода
             "password_recovery_code" -> PasswordRecoveryCodeScreen(
                 email = recoveryEmail,
                 sentCode = generatedCode,
@@ -85,7 +79,6 @@ fun NavigationApp() {
                 onCodeVerified = { currentScreen = "password_recovery_new_password" }
             )
 
-            // Новый пароль
             "password_recovery_new_password" -> PasswordRecoveryNewPasswordScreen(
                 onBackClick = { currentScreen = "login" },
                 users = users,
@@ -95,7 +88,6 @@ fun NavigationApp() {
                 }
             )
 
-            // Домашняя страница
             "home" -> HomeScreen(
                 user = currentUser,
                 onLogout = {
@@ -103,10 +95,8 @@ fun NavigationApp() {
                     currentScreen = "start"
                 },
                 onResultsClick = {
-                    // пока заглушка
                 },
                 onEditProfileClick = {
-                    // пока заглушка
                 }
             )
         }

@@ -35,11 +35,9 @@ fun PasswordRecoveryScreen(
             .fillMaxSize()
             .background(colorScheme.primary)
     ) {
-        // 🔹 Фоновые волны
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // 🔹 Стрелка "Назад" — в левом верхнем углу
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -54,7 +52,6 @@ fun PasswordRecoveryScreen(
             )
         }
 
-        // 🔹 Основное содержимое — по центру
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -62,7 +59,6 @@ fun PasswordRecoveryScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Заголовок
             Text(
                 text = "Восстановление пароля",
                 style = MaterialTheme.typography.headlineMedium,
@@ -72,7 +68,6 @@ fun PasswordRecoveryScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Настройка цветов для текстового поля
             val fieldColors = TextFieldDefaults.colors(
                 focusedContainerColor = CreamWhite,
                 unfocusedContainerColor = CreamWhite,
@@ -81,7 +76,6 @@ fun PasswordRecoveryScreen(
                 unfocusedTextColor = Color.Black
             )
 
-            // Поле для почты
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -95,7 +89,6 @@ fun PasswordRecoveryScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Кнопка "Отправить код"
             Button(
                 onClick = {
                     val existingUser = users.find { it.email.trim().equals(email.trim(), ignoreCase = true) }
@@ -105,16 +98,12 @@ fun PasswordRecoveryScreen(
                         return@Button
                     }
 
-                    // Генерируем 6-значный код
                     val code = (100000..999999).random().toString()
 
-                    // Логируем код (для теста)
                     Log.d("PasswordRecovery", "Сгенерированный код для $email: $code")
 
-                    // Для визуального теста
                     shownCode = code
 
-                    // Передаём код в навигацию
                     onCodeSent(email, code)
 
                     message = "Код отправлен на почту (для теста: $code)"
@@ -131,7 +120,6 @@ fun PasswordRecoveryScreen(
                 Text("Отправить код на почту", style = MaterialTheme.typography.titleMedium)
             }
 
-            // Сообщения
             if (message.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -141,7 +129,6 @@ fun PasswordRecoveryScreen(
                 )
             }
 
-            // Для теста показываем код
             if (shownCode.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

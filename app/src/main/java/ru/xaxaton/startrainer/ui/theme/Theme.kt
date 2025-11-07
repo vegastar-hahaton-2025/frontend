@@ -34,7 +34,7 @@ fun STARTrainerTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val colorTheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -44,7 +44,7 @@ fun STARTrainerTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colorTheme,
         typography = Typography,
         content = content
     )

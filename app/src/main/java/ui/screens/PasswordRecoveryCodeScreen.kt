@@ -31,11 +31,9 @@ fun PasswordRecoveryCodeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
     ) {
-        // Верхняя и нижняя волны
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // Кнопка "Назад"
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -50,7 +48,6 @@ fun PasswordRecoveryCodeScreen(
             )
         }
 
-        // Основное содержимое по центру
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -98,7 +95,7 @@ fun PasswordRecoveryCodeScreen(
             Button(
                 onClick = {
                     if (inputCode.trim() == sentCode.trim()) {
-                        message = "Код подтверждён ✅"
+                        message = "Код подтверждён"
                         onCodeVerified()
                     } else {
                         message = "Неверный код"
@@ -120,7 +117,7 @@ fun PasswordRecoveryCodeScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = message,
-                    color = if (message.contains("✅")) Color.Green else Color.Red,
+                    color = if (message.contains("")) Color.Green else Color.Red,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

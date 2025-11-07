@@ -40,7 +40,6 @@ fun PasswordRecoveryNewPasswordScreen(
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // 🔹 Стрелка "Назад"
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
