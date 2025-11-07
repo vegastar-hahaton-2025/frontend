@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
@@ -12,19 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
+import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
 
 @Composable
-fun HomeScreen(
-    user: SimpleUser?,
-    onLogout: () -> Unit,
-    onResultsClick: () -> Unit,
-    onEditProfileClick: () -> Unit,
-    onTestsClick: () -> Unit
+fun TestsChooseScreen(
+    onBackClick: () -> Unit,
+    onHomeClick: () -> Unit,
+    onTrainingClick: () -> Unit,
+    onTestingClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -34,6 +33,20 @@ fun HomeScreen(
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Назад",
+                tint = Color.Black,
+                modifier = Modifier.size(48.dp)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -41,33 +54,8 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val fullName = buildString {
-                append(user?.family.orEmpty())
-                val name = user?.name.orEmpty()
-                val patronymic = user?.patronymic.orEmpty()
-                if (name.isNotEmpty()) append(" ${name.first()}.")
-                if (patronymic.isNotEmpty()) append(" ${patronymic.first()}.")
-            }
-
-            Text(
-                text = fullName,
-                color = CreamWhite,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = user?.email ?: "example@mail.com",
-                color = CreamWhite,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(modifier = Modifier.height(40.dp))
-
             Button(
-                onClick = onResultsClick,
+                onClick = onTrainingClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -77,13 +65,13 @@ fun HomeScreen(
                     contentColor = Color.Black
                 )
             ) {
-                Text("Мои результаты")
+                Text("Обучение")
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = onEditProfileClick,
+                onClick = onTestingClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -93,23 +81,7 @@ fun HomeScreen(
                     contentColor = Color.Black
                 )
             ) {
-                Text("Редактировать профиль")
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(
-                onClick = onLogout,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                )
-            ) {
-                Text("Выйти из профиля")
+                Text("Тестирование")
             }
         }
 
@@ -121,7 +93,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onResultsClick) {
+            IconButton(onClick = onHomeClick) {
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
@@ -137,7 +109,7 @@ fun HomeScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = onTestsClick) {
+            IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",

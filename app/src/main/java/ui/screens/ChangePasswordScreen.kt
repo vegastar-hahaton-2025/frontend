@@ -2,9 +2,7 @@ package ru.xaxaton.startrainer.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChatBubbleOutline
@@ -15,24 +13,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.utils.hashPasswordWithSalt
+import ru.xaxaton.startrainer.utils.verifyPassword
 
 @Composable
-fun EditProfileScreen(
-    user: SimpleUser?,
+fun ChangePasswordScreen(
+    user: SimpleUser,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
-    onSaveChanges: (SimpleUser) -> Unit,
-    onChangePasswordClick: () -> Unit
+    onPasswordChanged: (SimpleUser) -> Unit
 ) {
-    var family by remember { mutableStateOf(user?.family.orEmpty()) }
-    var name by remember { mutableStateOf(user?.name.orEmpty()) }
-    var patronymic by remember { mutableStateOf(user?.patronymic.orEmpty()) }
-    var email by remember { mutableStateOf(user?.email.orEmpty()) }
+    var currentPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -59,8 +59,7 @@ fun EditProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -73,79 +72,73 @@ fun EditProfileScreen(
             )
 
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Имя") },
+                value = currentPassword,
+                onValueChange = {
+                    currentPassword = it
+                    errorMessage = null
+                },
+                label = { Text("Текущий пароль") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = fieldColors,
-                shape = RoundedCornerShape(12.dp)
+                visualTransformation = PasswordVisualTransformation(),
+                colors = fieldColors
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = family,
-                onValueChange = { family = it },
-                label = { Text("Фамилия") },
+                value = newPassword,
+                onValueChange = {
+                    newPassword = it
+                    errorMessage = null
+                },
+                label = { Text("Новый пароль") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = fieldColors,
-                shape = RoundedCornerShape(12.dp)
+                visualTransformation = PasswordVisualTransformation(),
+                colors = fieldColors
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = patronymic,
-                onValueChange = { patronymic = it },
-                label = { Text("Отчество") },
+                value = confirmPassword,
+                onValueChange = {
+                    confirmPassword = it
+                    errorMessage = null
+                },
+                label = { Text("Подтвердите новый пароль") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = fieldColors,
-                shape = RoundedCornerShape(12.dp)
+                visualTransformation = PasswordVisualTransformation(),
+                colors = fieldColors
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Почта") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                colors = fieldColors,
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(
-                onClick = onChangePasswordClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Смена пароля")
-            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 onClick = {
-                    if (user != null) {
-                        val updatedUser = user.copy(
-                            family = family,
-                            name = name,
-                            patronymic = patronymic,
-                            email = email
-                        )
-                        onSaveChanges(updatedUser)
+                    // Проверки в нужном порядке и с понятными сообщениями
+                    when {
+                        currentPassword.isBlank() ->
+                            errorMessage = "Введите текущий пароль"
+                        newPassword.isBlank() ->
+                            errorMessage = "Введите новый пароль"
+                        confirmPassword.isBlank() ->
+                            errorMessage = "Подтвердите новый пароль"
+                        !verifyPassword(currentPassword, user.passwordHash, user.salt) ->
+                            errorMessage = "Неверный пароль"
+                        newPassword != confirmPassword ->
+                            errorMessage = "Пароли не совпадают"
+                        else -> {
+                            // Всё верно — обновляем хеш и соль
+                            val (newHash, newSalt) = hashPasswordWithSalt(newPassword)
+                            val updatedUser = user.copy(
+                                passwordHash = newHash,
+                                salt = newSalt
+                            )
+                            onPasswordChanged(updatedUser)
+                        }
                     }
                 },
                 modifier = Modifier
@@ -158,6 +151,15 @@ fun EditProfileScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Сохранить изменения")
+            }
+
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = errorMessage!!,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
 
