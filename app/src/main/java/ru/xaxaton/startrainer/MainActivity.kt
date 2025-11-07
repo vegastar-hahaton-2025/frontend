@@ -162,6 +162,7 @@ fun NavigationApp() {
                 onBackClick = { currentScreen = "home" },
                 onHomeClick = { currentScreen = "home" },
                 onTestsClick = { currentScreen = "tests" },
+                onGroupsClick = { currentScreen = "groups" },
                 onSaveChanges = { updatedUser ->
                     users = users.map { if (it.email == currentUser?.email) updatedUser else it }
                     currentUser = updatedUser
@@ -176,6 +177,7 @@ fun NavigationApp() {
                     onBackClick = { currentScreen = "editProfile" },
                     onHomeClick = { currentScreen = "home" },
                     onTestsClick = { currentScreen = "tests" },
+                    onGroupsClick = { currentScreen = "groups" },
                     onPasswordChanged = { updated ->
                         currentUser = updated
                         currentScreen = "home"
@@ -204,9 +206,9 @@ fun NavigationApp() {
 
             "groups" -> currentUser?.let { user ->
                 GroupsScreen(
-                    onBackClick = { currentScreen = "home" },
                     onHomeClick = { currentScreen = "home" },
                     onTestsClick = { currentScreen = "tests" },
+                    onGroupsClick = { currentScreen = "groups" },
                     onCreateGroupClick = { currentScreen = "createGroup" },
                     onJoinGroupClick = { currentScreen = "joinGroup" },
                     onEditGroupClick = { groupId ->
@@ -226,8 +228,8 @@ fun NavigationApp() {
                     onBackClick = { currentScreen = "groups" },
                     onHomeClick = { currentScreen = "home" },
                     onTestsClick = { currentScreen = "tests" },
+                    onGroupsClick = { currentScreen = "groups" },
                     onJoinGroup = { code -> joinGroupByCode(code, user.email) },
-                    userEmail = user.email,
                     onSuccess = { currentScreen = "groups" }
                 )
             }
@@ -237,6 +239,7 @@ fun NavigationApp() {
                     onBackClick = { currentScreen = "groups" },
                     onHomeClick = { currentScreen = "home" },
                     onTestsClick = { currentScreen = "tests" },
+                    onGroupsClick = { currentScreen = "groups" },
                     onCreateGroup = { groupName ->
                         createGroup(groupName, user.email)
                         currentScreen = "groups"
@@ -253,6 +256,7 @@ fun NavigationApp() {
                         onBackClick = { currentScreen = "groups" },
                         onHomeClick = { currentScreen = "home" },
                         onTestsClick = { currentScreen = "tests" },
+                        onGroupsClick = { currentScreen = "groups" },
                         onEditClick = { currentScreen = "editGroupName" },
                         onRemoveMember = { memberEmail -> removeMemberFromGroup(group.id, memberEmail) },
                         onCopyLink = { joinCode -> copyTextToClipboard(joinCode) }
@@ -268,6 +272,7 @@ fun NavigationApp() {
                         onBackClick = { currentScreen = "editGroup" },
                         onHomeClick = { currentScreen = "home" },
                         onTestsClick = { currentScreen = "tests" },
+                        onGroupsClick = { currentScreen = "groups" },
                         onSave = { newName ->
                             updateGroupName(group.id, newName)
                             currentScreen = "editGroup"
@@ -283,6 +288,8 @@ fun NavigationApp() {
             "trainingLevel" -> TrainingLevelScreen(
                 onBackClick = { currentScreen = "tests" },
                 onHomeClick = { currentScreen = "home" },
+                onGroupsClick = { currentScreen = "groups" },
+                onTestsClick = { currentScreen = "tests" },
                 onLevelSelected = { level -> println("Выбран уровень: $level") }
             )
         }

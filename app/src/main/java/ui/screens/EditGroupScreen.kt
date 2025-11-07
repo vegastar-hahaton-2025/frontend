@@ -35,12 +35,13 @@ fun EditGroupScreen(
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
     onEditClick: () -> Unit,
-    onRemoveMember: (String) -> Unit, // memberEmail
-    onCopyLink: (String) -> Unit // joinCode
+    onRemoveMember: (String) -> Unit,
+    onCopyLink: (String) -> Unit,
+    onGroupsClick: () -> Unit
 ) {
     var showLinkCopied by remember { mutableStateOf(false) }
     
-    // Получаем список участников БЕЗ создателя
+    // Получаем список участников
     val members = group.members.filter { it != group.creatorEmail }.mapNotNull { email ->
         users.find { it.email == email }?.let { user ->
             val fullName = buildString {
@@ -49,9 +50,6 @@ fun EditGroupScreen(
                 if (user.patronymic.isNotEmpty()) append("${user.patronymic.first()}.")
             }
             Pair(email, fullName)
-        } ?: run {
-            // Если пользователь не найден, используем email
-            Pair(email, email)
         }
     }
 
@@ -122,7 +120,7 @@ fun EditGroupScreen(
                 }
             }
 
-            // Кнопка "Сгенерировать тестирование"
+            // Кнопка "Создать тестирование"
             Button(
                 onClick = { /* TODO: Генерация тестирования */ },
                 enabled = false,
@@ -146,7 +144,7 @@ fun EditGroupScreen(
                         contentDescription = null,
                         modifier = Modifier.size(20.dp)
                     )
-                    Text("Сгенерировать тестирование")
+                    Text("Создать тестирование")
                 }
             }
 
@@ -182,7 +180,7 @@ fun EditGroupScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Кнопка копирования ссылки
+            // Кнопка копирования кода для вступления
             Button(
                 onClick = {
                     onCopyLink(group.joinCode)
@@ -206,7 +204,7 @@ fun EditGroupScreen(
                         contentDescription = null,
                         modifier = Modifier.size(20.dp)
                     )
-                    Text(if (showLinkCopied) "Ссылка скопирована!" else "Скопировать ссылку для вступления")
+                    Text(if (showLinkCopied) "Код скопирован!" else "Скопировать код для вступления в группу")
                 }
             }
             
@@ -288,7 +286,7 @@ fun EditGroupScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* здесь остаёмся на группах */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",

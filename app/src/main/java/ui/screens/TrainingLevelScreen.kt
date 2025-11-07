@@ -22,7 +22,9 @@ import ru.xaxaton.startrainer.ui.theme.CreamWhite
 fun TrainingLevelScreen(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
-    onLevelSelected: (level: String) -> Unit
+    onLevelSelected: (level: String) -> Unit,
+    onGroupsClick: () -> Unit,
+    onTestsClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -101,15 +103,15 @@ fun TrainingLevelScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* TODO: Чат */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
-                    contentDescription = "Чат",
+                    contentDescription = "Группы",
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* TODO: Тесты */ }) {
+            IconButton(onClick = onTestsClick) { // Тесты → Tests
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",

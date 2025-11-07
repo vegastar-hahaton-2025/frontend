@@ -25,7 +25,8 @@ fun CreateGroupScreen(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
-    onCreateGroup: (String) -> Unit
+    onCreateGroup: (String) -> Unit,
+    onGroupsClick: () -> Unit
 ) {
     var groupName by remember { mutableStateOf("") }
 
@@ -37,7 +38,6 @@ fun CreateGroupScreen(
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // Верхний ряд с кнопкой назад
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -60,7 +60,6 @@ fun CreateGroupScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Заголовок "Создание группы"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,7 +85,6 @@ fun CreateGroupScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Поле для названия группы
             val fieldColors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
@@ -113,7 +111,6 @@ fun CreateGroupScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Кнопка "Создать группу"
             Button(
                 onClick = {
                     if (groupName.isNotBlank()) {
@@ -139,7 +136,6 @@ fun CreateGroupScreen(
             }
         }
 
-        // Нижнее меню
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -156,7 +152,7 @@ fun CreateGroupScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* здесь остаёмся на группах */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",

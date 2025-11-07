@@ -33,7 +33,8 @@ fun GroupsScreen(
     onEditGroupClick: (String) -> Unit, // groupId
     onLeaveGroup: (String) -> Unit, // groupId
     groups: List<Group>,
-    userEmail: String
+    userEmail: String,
+    onGroupsClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf("Все группы") }
@@ -234,7 +235,7 @@ fun GroupsScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* здесь остаёмся на группах */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",

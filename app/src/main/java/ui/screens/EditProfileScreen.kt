@@ -27,7 +27,8 @@ fun EditProfileScreen(
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
     onSaveChanges: (SimpleUser) -> Unit,
-    onChangePasswordClick: () -> Unit
+    onChangePasswordClick: () -> Unit,
+    onGroupsClick: () -> Unit
 ) {
     var family by remember { mutableStateOf(user?.family.orEmpty()) }
     var name by remember { mutableStateOf(user?.name.orEmpty()) }
@@ -177,10 +178,10 @@ fun EditProfileScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* TODO: Группа */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
-                    contentDescription = "Группа",
+                    contentDescription = "Группы",
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )

@@ -27,7 +27,8 @@ fun ChangePasswordScreen(
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
-    onPasswordChanged: (SimpleUser) -> Unit
+    onPasswordChanged: (SimpleUser) -> Unit,
+    onGroupsClick: () -> Unit
 ) {
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
@@ -179,10 +180,10 @@ fun ChangePasswordScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* TODO: Группа */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
-                    contentDescription = "Группа",
+                    contentDescription = "Группы",
                     tint = Color.Black,
                     modifier = Modifier.size(36.dp)
                 )

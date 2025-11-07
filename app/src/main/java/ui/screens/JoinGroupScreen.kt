@@ -36,8 +36,8 @@ fun JoinGroupScreen(
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
     onJoinGroup: (String) -> JoinResult, // возвращает результат вступления
-    userEmail: String,
-    onSuccess: () -> Unit = {} // вызывается после успешного вступления
+    onSuccess: () -> Unit = {},
+    onGroupsClick: () -> Unit
 ) {
     var joinCode by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
@@ -218,7 +218,7 @@ fun JoinGroupScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* здесь остаёмся на группах */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",

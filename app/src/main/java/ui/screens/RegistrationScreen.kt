@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -42,7 +43,7 @@ data class Group(
     val name: String,
     val creatorEmail: String,
     val joinCode: String,
-    val members: List<String> = emptyList() // список email участников
+    val members: List<String> = emptyList()
 )
 
 @Composable
@@ -109,86 +110,170 @@ fun RegistrationScreen(
             )
 
             fun validateEmail(email: String): Boolean {
-                // Проверяем базовый формат
                 if (!Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
                     return false
                 }
-                
-                // Проверяем домен (минимум 2 символа после точки)
+
                 val parts = email.trim().split("@")
                 if (parts.size != 2) return false
-                
+
                 val domain = parts[1]
                 val domainParts = domain.split(".")
                 if (domainParts.size < 2) return false
-                
-                // Последняя часть домена должна быть минимум 2 символа
+
                 val tld = domainParts.last()
                 if (tld.length < 2) return false
-                
-                // Проверяем, что домен содержит только буквы, цифры, точки и дефисы
+
                 if (!domain.matches(Regex("^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))) {
                     return false
                 }
-                
+
                 return true
             }
 
             fun validateAndRegister() {
+                // Проверка  полей
                 when {
-                    !validateEmail(email) ->
+                    surname.trim().isEmpty() -> {
+                        errorMessage = "Фамилия обязательна для заполнения"
+                        return
+                    }
+                    name.trim().isEmpty() -> {
+                        errorMessage = "Имя обязательно для заполнения"
+                        return
+                    }
+                    email.trim().isEmpty() -> {
+                        errorMessage = "Почта обязательна для заполнения"
+                        return
+                    }
+                    password.isEmpty() -> {
+                        errorMessage = "Пароль обязателен для заполнения"
+                        return
+                    }
+                    !validateEmail(email) -> {
                         errorMessage = "Введите корректный адрес почты"
-
-                    existingUsers.any { it.email.equals(email.trim(), ignoreCase = true) } ->
+                        return
+                    }
+                    existingUsers.any { it.email.equals(email.trim(), ignoreCase = true) } -> {
                         errorMessage = "Эта почта уже зарегистрирована"
-
+                        return
+                    }
+                    password.length < 6 -> {
+                        errorMessage = "Пароль должен содержать минимум 6 символов"
+                        return
+                    }
                     else -> {
                         val (hashHex, saltHex) = hashPasswordWithSalt(password)
                         val user = SimpleUser(
-                            surname.trim(),
-                            name.trim(),
-                            patronymic.trim(),
-                            email.trim(),
-                            hashHex,
-                            saltHex
+                            family = surname.trim(),
+                            name = name.trim(),
+                            patronymic = patronymic.trim(),
+                            email = email.trim(),
+                            passwordHash = hashHex,
+                            salt = saltHex
                         )
+                        errorMessage = null
                         onRegister(user)
                     }
                 }
             }
 
-            val fields = listOf<Pair<String, (String) -> Unit>>(
-                "Фамилия" to { surname = it },
-                "Имя" to { name = it },
-                "Отчество" to { patronymic = it },
-                "Почта" to { email = it }
+            OutlinedTextField(
+                value = surname,
+                onValueChange = { surname = it },
+                label = {
+                    Text(
+                        text = "Фамилия *",
+                        color = Color.Black
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp),
+                isError = errorMessage == "Фамилия обязательна для заполнения"
             )
-            fields.forEach { (label, onValueChange) ->
-                OutlinedTextField(
-                    value = when (label) {
-                        "Фамилия" -> surname
-                        "Имя" -> name
-                        "Отчество" -> patronymic
-                        else -> email
-                    },
-                    onValueChange = { onValueChange(it) },
-                    label = { Text(label) },
-                    singleLine = true,
-                    keyboardOptions = if (label == "Почта")
-                        KeyboardOptions(keyboardType = KeyboardType.Email)
-                    else KeyboardOptions.Default,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = fieldColors,
-                    shape = RoundedCornerShape(12.dp)
-                )
 
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = {
+                    Text(
+                        text = "Имя *",
+                        color = Color.Black
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp),
+                isError = errorMessage == "Имя обязательно для заполнения"
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = patronymic,
+                onValueChange = { patronymic = it },
+                label = {
+                    Text(
+                        text = "Отчество",
+                        color = Color.Black.copy(alpha = 0.6f)
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = {
+                    Text(
+                        text = "Почта *",
+                        color = Color.Black
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp),
+                isError = errorMessage == "Почта обязательна для заполнения" ||
+                        errorMessage == "Введите корректный адрес почты" ||
+                        errorMessage == "Эта почта уже зарегистрирована"
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
-                label = { Text("Пароль") },
+                onValueChange = {
+                    password = it
+                    if (errorMessage == "Пароль обязателен для заполнения" ||
+                        errorMessage == "Пароль должен содержать минимум 6 символов") {
+                        errorMessage = null
+                    }
+                },
+                label = { Text("Пароль *") },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -200,10 +285,15 @@ fun RegistrationScreen(
                         )
                     }
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 colors = fieldColors,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                isError = errorMessage == "Пароль обязателен для заполнения" ||
+                        errorMessage == "Пароль должен содержать минимум 6 символов"
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -230,6 +320,13 @@ fun RegistrationScreen(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "* обязательные поля",
+                color = CreamWhite.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

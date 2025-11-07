@@ -28,7 +28,8 @@ fun EditGroupNameScreen(
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
     onSave: (String) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onGroupsClick: () -> Unit
 ) {
     var groupName by remember { mutableStateOf(group.name) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -211,7 +212,7 @@ fun EditGroupNameScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = { /* здесь остаёмся на группах */ }) {
+            IconButton(onClick = onGroupsClick) { // Чат → Groups
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
