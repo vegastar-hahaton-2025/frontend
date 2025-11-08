@@ -42,7 +42,9 @@ fun EditGroupScreen(
     onEditClick: () -> Unit,
     onRemoveMember: (String) -> Unit, // memberId as String
     onCopyLink: (String) -> Unit,
-    onGroupsClick: () -> Unit
+    onGroupsClick: () -> Unit,
+    onGenerateTestClick: () -> Unit, // Callback для генерации тестирования
+    onStatisticsClick: () -> Unit // Callback для статистики тестирований
 ) {
     var showLinkCopied by remember { mutableStateOf(false) }
     
@@ -116,61 +118,59 @@ fun EditGroupScreen(
                 }
             }
 
-            // Кнопка "Создать тестирование"
-            Button(
-                onClick = { /* TODO: Генерация тестирования */ },
-                enabled = false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.5f),
-                    contentColor = Color.Black.copy(alpha = 0.5f),
-                    disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
-                    disabledContentColor = Color.Black.copy(alpha = 0.5f)
-                )
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+            // Кнопка "Сгенерировать тестирование"
+            if (isOwner) {
+                Button(
+                    onClick = onGenerateTestClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CreamWhite,
+                        contentColor = Color.Black
                     )
-                    Text("Создать тестирование")
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text("Сгенерировать тестирование")
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Кнопка "Статистика тестирований"
-            Button(
-                onClick = { /* TODO: Статистика тестирований */ },
-                enabled = false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.5f),
-                    contentColor = Color.Black.copy(alpha = 0.5f),
-                    disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
-                    disabledContentColor = Color.Black.copy(alpha = 0.5f)
-                )
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.BarChart,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+            if (isOwner) {
+                Button(
+                    onClick = onStatisticsClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CreamWhite,
+                        contentColor = Color.Black
                     )
-                    Text("Статистика тестирований")
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.BarChart,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text("Статистика тестирований")
+                    }
                 }
             }
 

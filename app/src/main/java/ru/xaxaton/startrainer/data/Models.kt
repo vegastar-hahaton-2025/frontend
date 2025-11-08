@@ -167,6 +167,19 @@ data class GroupTestAssignment(
 )
 
 /**
+ * Модель тестирования, назначенного группе (для отображения пользователям)
+ */
+data class GroupTesting(
+    val id: UUID,
+    val testId: UUID,
+    val groupId: UUID,
+    val groupName: String,
+    val difficulty: String, // "easy", "medium", "hard"
+    val publishedDate: Long, // Unix timestamp в миллисекундах
+    val creatorId: UUID
+)
+
+/**
  * Режим прохождения теста
  */
 enum class TestMode {

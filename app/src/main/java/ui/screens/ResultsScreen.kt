@@ -1,6 +1,7 @@
 package ru.xaxaton.startrainer.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,13 +24,14 @@ import ru.xaxaton.startrainer.ui.theme.CreamWhite
 import ru.xaxaton.startrainer.data.TestSession
 import ru.xaxaton.startrainer.data.Test
 import ru.xaxaton.startrainer.data.TestMode
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.UUID
 
 @Composable
-fun ResultsScreen(
+fun TrainingResultsScreen(
     testSessions: List<TestSession>,
     tests: List<Test>,
+    sessionDifficulties: Map<UUID, String>, // sessionId -> difficulty (easy/medium/hard)
+    onSessionClick: (UUID) -> Unit, // Callback при клике на сессию
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onGroupsClick: () -> Unit,
@@ -65,12 +67,25 @@ fun ResultsScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Мои результаты",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
+            // Заголовок в белом боксе
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CreamWhite
+                )
+            ) {
+                Text(
+                    text = "МОИ РЕЗУЛЬТАТЫ\nОБУЧЕНИЙ",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    color = Color.Black,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -81,81 +96,87 @@ fun ResultsScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             } else {
-                // Группируем сессии по тестам
-                val sessionsByTest = testSessions
+                // Сортируем сессии от последнего к первому
+                val sortedSessions = testSessions
                     .filter { it.endTime != null && it.score != null }
                     .sortedByDescending { it.endTime }
-                    .groupBy { it.testId }
 
-                sessionsByTest.forEach { (testId, sessions) ->
-                    val test = tests.find { it.id == testId }
-                    test?.let {
-                        Card(
+                sortedSessions.forEach { session ->
+                    val difficulty = sessionDifficulties[session.id] ?: "easy"
+                    
+                    // Вычисляем правильные ответы из процента
+                    val totalQuestions = when (difficulty) {
+                        "easy" -> 10
+                        "medium" -> 15
+                        "hard" -> 20
+                        else -> 10
+                    }
+                    val correctAnswers = ((session.score!! / 100.0) * totalQuestions).toInt()
+                    
+                    // Название сложности
+                    val difficultyName = when (difficulty) {
+                        "easy" -> "лёгкий"
+                        "medium" -> "средний"
+                        "hard" -> "тяжёлый"
+                        else -> "лёгкий"
+                    }
+                    
+                    // Цвет для сложности
+                    val difficultyColor = when (difficulty) {
+                        "easy" -> Color(0xFF81C784) // Зелёный
+                        "medium" -> Color(0xFFFFB74D) // Жёлтый
+                        "hard" -> Color(0xFFE57373) // Красный
+                        else -> Color(0xFF81C784)
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable { onSessionClick(session.id) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CreamWhite
+                        )
+                    ) {
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = CreamWhite
-                            )
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(
+                            // Бокс с результатом (правильные/всего)
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
+                                    .background(
+                                        Color.Gray.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(20.dp)
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
                                 Text(
-                                    text = it.name,
+                                    text = "$correctAnswers/$totalQuestions",
                                     color = Color.Black,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium
                                 )
+                            }
 
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                sessions.forEach { session ->
-                                    val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-                                    val endDate = Date(session.endTime ?: 0)
-                                    
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = when (session.mode) {
-                                                    TestMode.TRAINING -> "Обучение"
-                                                    TestMode.EXAM -> "Экзамен"
-                                                },
-                                                color = Color.Black.copy(alpha = 0.7f),
-                                                style = MaterialTheme.typography.bodyMedium
-                                            )
-                                            Text(
-                                                text = dateFormat.format(endDate),
-                                                color = Color.Black.copy(alpha = 0.5f),
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
-
-                                        Text(
-                                            text = "${String.format("%.1f", session.score)}%",
-                                            color = when {
-                                                session.score!! >= 80 -> Color(0xFF4CAF50)
-                                                session.score >= 60 -> Color(0xFFFF9800)
-                                                else -> Color(0xFFFF5252)
-                                            },
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-
-                                    if (sessions.size > 1 && session != sessions.last()) {
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        HorizontalDivider(color = Color.Black.copy(alpha = 0.2f))
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                    }
-                                }
+                            // Бокс с названием сложности
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        difficultyColor.copy(alpha = 0.3f),
+                                        shape = RoundedCornerShape(20.dp)
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = difficultyName,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
                     }

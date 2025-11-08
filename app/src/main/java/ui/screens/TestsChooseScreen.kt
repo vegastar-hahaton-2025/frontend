@@ -27,7 +27,7 @@ fun TestsChooseScreen(
     onGroupsClick: () -> Unit,
     onTestsClick: () -> Unit, // для нижнего меню
     onTrainingClick: (UUID) -> Unit, // testId
-    onTestingClick: (UUID) -> Unit   // testId
+    onTestingClick: () -> Unit   // Переход на список тестирований
 ) {
     Box(
         modifier = Modifier
@@ -68,9 +68,7 @@ fun TestsChooseScreen(
             // Кнопка "Тестирование"
             Button(
                 onClick = { 
-                    // Берем первый доступный тест или создаем временный
-                    val testId = availableTests.firstOrNull()?.id ?: UUID.randomUUID()
-                    onTestingClick(testId)
+                    onTestingClick()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
