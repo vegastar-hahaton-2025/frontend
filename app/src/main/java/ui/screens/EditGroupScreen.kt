@@ -26,32 +26,28 @@ import androidx.compose.runtime.LaunchedEffect
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.data.Group
+import ru.xaxaton.startrainer.data.User
+import java.util.UUID
 
 @Composable
 fun EditGroupScreen(
     group: Group,
-    users: List<SimpleUser>,
+    owner: User?,
+    members: List<User>,
+    currentUserId: UUID,
     onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onTestsClick: () -> Unit,
     onEditClick: () -> Unit,
-    onRemoveMember: (String) -> Unit,
+    onRemoveMember: (String) -> Unit, // memberId as String
     onCopyLink: (String) -> Unit,
     onGroupsClick: () -> Unit
 ) {
     var showLinkCopied by remember { mutableStateOf(false) }
     
-    // Получаем список участников
-    val members = group.members.filter { it != group.creatorEmail }.mapNotNull { email ->
-        users.find { it.email == email }?.let { user ->
-            val fullName = buildString {
-                append(user.family)
-                if (user.name.isNotEmpty()) append(" ${user.name.first()}.")
-                if (user.patronymic.isNotEmpty()) append("${user.patronymic.first()}.")
-            }
-            Pair(email, fullName)
-        }
-    }
+    val isOwner = group.ownerId == currentUserId
+    val joinCode = group.getJoinCode()
 
     Box(
         modifier = Modifier
@@ -183,7 +179,7 @@ fun EditGroupScreen(
             // Кнопка копирования кода для вступления
             Button(
                 onClick = {
-                    onCopyLink(group.joinCode)
+                    onCopyLink(joinCode)
                     showLinkCopied = true
                 },
                 modifier = Modifier
@@ -204,7 +200,7 @@ fun EditGroupScreen(
                         contentDescription = null,
                         modifier = Modifier.size(20.dp)
                     )
-                    Text(if (showLinkCopied) "Код скопирован!" else "Скопировать код для вступления в группу")
+                    Text(if (showLinkCopied) "Код скопирован!" else "Скопировать код для вступления")
                 }
             }
             
@@ -218,8 +214,53 @@ fun EditGroupScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Список участников
-            members.forEach { (email, fullName) ->
+            // Показываем владельца, если он не текущий пользователь
+            owner?.let { ownerUser ->
+                if (ownerUser.id != currentUserId) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CreamWhite
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = ownerUser.getFormattedName(),
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = ownerUser.email,
+                                    color = Color.Black.copy(alpha = 0.6f),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Владелец",
+                                    color = Color.Black.copy(alpha = 0.5f),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Список участников (исключая владельца)
+            members.filter { it.id != group.ownerId }.forEach { member ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -240,29 +281,31 @@ fun EditGroupScreen(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = fullName,
+                                text = member.getFormattedName(),
                                 color = Color.Black,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = email,
+                                text = member.email,
                                 color = Color.Black.copy(alpha = 0.6f),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
 
-                        // Крестик для удаления участника
-                        IconButton(
-                            onClick = { onRemoveMember(email) },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "Удалить участника",
-                                tint = Color.Black,
-                                modifier = Modifier.size(24.dp)
-                            )
+                        // Крестик для удаления участника (только для владельца)
+                        if (isOwner) {
+                            IconButton(
+                                onClick = { onRemoveMember(member.id.toString()) },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Удалить участника",
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
                     }
                 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.data.SimpleUser
 
 @Composable
 fun PasswordRecoveryScreen(

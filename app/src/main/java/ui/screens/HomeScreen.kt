@@ -17,11 +17,13 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.data.SimpleUser
 
 @Composable
 fun HomeScreen(
     user: SimpleUser?,
     onLogout: () -> Unit,
+    onHomeClick: () -> Unit,
     onResultsClick: () -> Unit,
     onEditProfileClick: () -> Unit,
     onTestsClick: () -> Unit,
@@ -42,13 +44,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val fullName = buildString {
-                append(user?.family.orEmpty())
-                val name = user?.name.orEmpty()
-                val patronymic = user?.patronymic.orEmpty()
-                if (name.isNotEmpty()) append(" ${name.first()}.")
-                if (patronymic.isNotEmpty()) append("${patronymic.first()}.")
-            }
+            val fullName = user?.getFormattedName() ?: ""
 
             Text(
                 text = fullName,
@@ -117,7 +113,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onResultsClick) { // Домик → Home
+            IconButton(onClick = onHomeClick) { // Домик → Home
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",

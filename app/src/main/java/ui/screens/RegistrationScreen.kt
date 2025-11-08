@@ -28,23 +28,8 @@ import ru.xaxaton.startrainer.ui.theme.CreamWhite
 import ru.xaxaton.startrainer.ui.theme.STARTrainerTheme
 import ru.xaxaton.startrainer.utils.hashPasswordWithSalt
 import androidx.compose.material.icons.filled.ArrowBack
-
-data class SimpleUser(
-    val family: String,
-    val name: String,
-    val patronymic: String,
-    val email: String,
-    val passwordHash: String,
-    val salt: String
-)
-
-data class Group(
-    val id: String,
-    val name: String,
-    val creatorEmail: String,
-    val joinCode: String,
-    val members: List<String> = emptyList()
-)
+import ru.xaxaton.startrainer.data.SimpleUser
+import java.util.UUID
 
 @Composable
 fun RegistrationScreen(
@@ -165,6 +150,7 @@ fun RegistrationScreen(
                     else -> {
                         val (hashHex, saltHex) = hashPasswordWithSalt(password)
                         val user = SimpleUser(
+                            id = UUID.randomUUID(),
                             family = surname.trim(),
                             name = name.trim(),
                             patronymic = patronymic.trim(),

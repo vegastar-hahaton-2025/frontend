@@ -14,6 +14,13 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import ru.xaxaton.startrainer.ui.screens.*
 import ru.xaxaton.startrainer.ui.theme.STARTrainerTheme
+import ru.xaxaton.startrainer.data.SimpleUser
+import ru.xaxaton.startrainer.data.Group
+import ru.xaxaton.startrainer.data.GroupMembership
+import ru.xaxaton.startrainer.data.GroupTestAssignment
+import ru.xaxaton.startrainer.data.Test
+import ru.xaxaton.startrainer.data.TestSession
+import java.util.UUID
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,55 +48,89 @@ fun NavigationApp() {
     var recoveryEmail by remember { mutableStateOf("") }
     var generatedCode by remember { mutableStateOf("") }
     var groups by remember { mutableStateOf(listOf<Group>()) }
-    var editingGroupId by remember { mutableStateOf<String?>(null) }
+    var groupMemberships by remember { mutableStateOf(listOf<GroupMembership>()) }
+    var editingGroupId by remember { mutableStateOf<UUID?>(null) }
+    var tests by remember { mutableStateOf(listOf<Test>()) }
+    var groupTestAssignments by remember { mutableStateOf(listOf<GroupTestAssignment>()) }
+    var testSessions by remember { mutableStateOf(listOf<TestSession>()) }
 
-    // Генерация кода группы
-    fun generateGroupCode(): String {
-        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return (1..6).map { chars.random() }.joinToString("")
+    // Получение групп пользователя
+    fun getUserGroups(userId: UUID): List<Group> {
+        val userGroupIds = groupMemberships.filter { it.userId == userId }.map { it.groupId }.toSet()
+        val ownedGroupIds = groups.filter { it.ownerId == userId }.map { it.id }.toSet()
+        val allGroupIds = userGroupIds + ownedGroupIds
+        return groups.filter { it.id in allGroupIds }
+    }
+
+    // Проверка, является ли пользователь участником группы
+    fun isUserMemberOfGroup(userId: UUID, groupId: UUID): Boolean {
+        return groupMemberships.any { it.userId == userId && it.groupId == groupId } ||
+               groups.any { it.id == groupId && it.ownerId == userId }
+    }
+
+    // Получение участников группы
+    fun getGroupMembers(groupId: UUID): List<UUID> {
+        val ownerId = groups.find { it.id == groupId }?.ownerId
+        val memberIds = groupMemberships.filter { it.groupId == groupId }.map { it.userId }
+        return if (ownerId != null) {
+            (memberIds + ownerId).distinct()
+        } else {
+            memberIds
+        }
     }
 
     // Создание группы
-    fun createGroup(name: String, creatorEmail: String) {
+    fun createGroup(name: String, creatorId: UUID) {
         val newGroup = Group(
-            id = java.util.UUID.randomUUID().toString(),
+            id = UUID.randomUUID(),
             name = name,
-            creatorEmail = creatorEmail,
-            joinCode = generateGroupCode(),
-            members = listOf(creatorEmail)
+            ownerId = creatorId
         )
         groups = groups + newGroup
     }
 
-    // Вступление в группу по коду
-    fun joinGroupByCode(code: String, userEmail: String): JoinResult {
-        val group = groups.find { it.joinCode == code } ?: return JoinResult.InvalidCode
-        if (group.members.contains(userEmail) || group.creatorEmail == userEmail) return JoinResult.AlreadyMember
-        val updatedGroup = group.copy(members = group.members + userEmail)
-        groups = groups.map { if (it.id == group.id) updatedGroup else it }
+    // Вступление в группу по коду (код генерируется из UUID группы)
+    fun joinGroupByCode(code: String, userId: UUID): JoinResult {
+        // Ищем группу по коду (первые 6 символов UUID)
+        val group = groups.find { 
+            it.getJoinCode().equals(code, ignoreCase = true) 
+        } ?: return JoinResult.InvalidCode
+        
+        // Проверяем, не является ли пользователь уже участником
+        if (isUserMemberOfGroup(userId, group.id)) {
+            return JoinResult.AlreadyMember
+        }
+        
+        // Добавляем членство
+        val membership = GroupMembership(userId, group.id)
+        groupMemberships = groupMemberships + membership
         return JoinResult.Success
     }
 
     // Выход из группы
-    fun leaveGroup(groupId: String, userEmail: String) {
+    fun leaveGroup(groupId: UUID, userId: UUID) {
         val group = groups.find { it.id == groupId }
-        if (group != null && group.members.contains(userEmail) && group.creatorEmail != userEmail) {
-            val updatedGroup = group.copy(members = group.members.filter { it != userEmail })
-            groups = groups.map { if (it.id == groupId) updatedGroup else it }
+        // Владелец не может выйти из группы
+        if (group != null && group.ownerId != userId) {
+            groupMemberships = groupMemberships.filter { 
+                !(it.userId == userId && it.groupId == groupId) 
+            }
         }
     }
 
     // Удаление участника (для создателя)
-    fun removeMemberFromGroup(groupId: String, memberEmail: String) {
+    fun removeMemberFromGroup(groupId: UUID, memberId: UUID) {
         val group = groups.find { it.id == groupId }
-        if (group != null && group.members.contains(memberEmail) && memberEmail != group.creatorEmail) {
-            val updatedGroup = group.copy(members = group.members.filter { it != memberEmail })
-            groups = groups.map { if (it.id == groupId) updatedGroup else it }
+        // Нельзя удалить владельца
+        if (group != null && group.ownerId != memberId) {
+            groupMemberships = groupMemberships.filter { 
+                !(it.userId == memberId && it.groupId == groupId) 
+            }
         }
     }
 
     // Редактирование названия группы
-    fun updateGroupName(groupId: String, newName: String) {
+    fun updateGroupName(groupId: UUID, newName: String) {
         val group = groups.find { it.id == groupId }
         if (group != null) {
             val updatedGroup = group.copy(name = newName)
@@ -98,8 +139,10 @@ fun NavigationApp() {
     }
 
     // Удаление группы
-    fun deleteGroup(groupId: String) {
+    fun deleteGroup(groupId: UUID) {
         groups = groups.filter { it.id != groupId }
+        // Удаляем все членства в этой группе
+        groupMemberships = groupMemberships.filter { it.groupId != groupId }
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -157,19 +200,24 @@ fun NavigationApp() {
                 }
             )
 
-            "editProfile" -> EditProfileScreen(
-                user = currentUser,
-                onBackClick = { currentScreen = "home" },
-                onHomeClick = { currentScreen = "home" },
-                onTestsClick = { currentScreen = "tests" },
-                onGroupsClick = { currentScreen = "groups" },
-                onSaveChanges = { updatedUser ->
-                    users = users.map { if (it.email == currentUser?.email) updatedUser else it }
-                    currentUser = updatedUser
-                    currentScreen = "home"
-                },
-                onChangePasswordClick = { currentScreen = "changePassword" }
-            )
+            "editProfile" -> {
+                val user = currentUser
+                if (user != null) {
+                    EditProfileScreen(
+                        user = user,
+                        onBackClick = { currentScreen = "home" },
+                        onHomeClick = { currentScreen = "home" },
+                        onTestsClick = { currentScreen = "tests" },
+                        onGroupsClick = { currentScreen = "groups" },
+                        onSaveChanges = { updatedUser ->
+                            users = users.map { if (it.email == user.email) updatedUser else it }
+                            currentUser = updatedUser
+                            currentScreen = "home"
+                        },
+                        onChangePasswordClick = { currentScreen = "changePassword" }
+                    )
+                }
+            }
 
             "changePassword" -> currentUser?.let { user ->
                 ChangePasswordScreen(
@@ -179,6 +227,8 @@ fun NavigationApp() {
                     onTestsClick = { currentScreen = "tests" },
                     onGroupsClick = { currentScreen = "groups" },
                     onPasswordChanged = { updated ->
+                        // Обновляем пользователя в списке users
+                        users = users.map { if (it.id == user.id) updated else it }
                         currentUser = updated
                         currentScreen = "home"
                     }
@@ -191,18 +241,48 @@ fun NavigationApp() {
                     currentUser = null
                     currentScreen = "start"
                 },
-                onResultsClick = { currentScreen = "home" },
+                onHomeClick = { currentScreen = "home" },
+                onResultsClick = { currentScreen = "results" },
                 onEditProfileClick = { currentScreen = "editProfile" },
                 onTestsClick = { currentScreen = "tests" },
                 onGroupsClick = { currentScreen = "groups" }
             )
 
-            "tests" -> TestsChooseScreen(
-                onHomeClick = { currentScreen = "home" },
-                onGroupsClick = { currentScreen = "groups" },
-                onTrainingClick = { currentScreen = "trainingLevel" },
-                onTestingClick = { /* TODO */ }
-            )
+            "results" -> currentUser?.let { user ->
+                val userSessions = testSessions.filter { it.userId == user.id }
+                ResultsScreen(
+                    testSessions = userSessions,
+                    tests = tests,
+                    onBackClick = { currentScreen = "home" },
+                    onHomeClick = { currentScreen = "home" },
+                    onGroupsClick = { currentScreen = "groups" },
+                    onTestsClick = { currentScreen = "tests" }
+                )
+            }
+
+            "tests" -> currentUser?.let { user ->
+                // Получаем тесты, назначенные группам пользователя
+                val userGroupIds = getUserGroups(user.id).map { it.id }.toSet()
+                val assignedTestIds = groupTestAssignments
+                    .filter { it.groupId in userGroupIds }
+                    .map { it.testId }
+                    .toSet()
+                val availableTests = tests.filter { it.id in assignedTestIds }
+                
+                TestsChooseScreen(
+                    availableTests = availableTests,
+                    onHomeClick = { currentScreen = "home" },
+                    onGroupsClick = { currentScreen = "groups" },
+                    onTestsClick = { currentScreen = "tests" },
+                    onTrainingClick = { testId -> 
+                        // TODO: начать сессию обучения
+                        currentScreen = "trainingLevel" 
+                    },
+                    onTestingClick = { testId -> 
+                        // TODO: начать экзаменационную сессию
+                    }
+                )
+            }
 
             "groups" -> currentUser?.let { user ->
                 GroupsScreen(
@@ -212,14 +292,15 @@ fun NavigationApp() {
                     onCreateGroupClick = { currentScreen = "createGroup" },
                     onJoinGroupClick = { currentScreen = "joinGroup" },
                     onEditGroupClick = { groupId ->
-                        editingGroupId = groupId
+                        editingGroupId = UUID.fromString(groupId)
                         currentScreen = "editGroup"
                     },
-                    onLeaveGroup = { groupId -> leaveGroup(groupId, user.email) },
-                    groups = groups.filter {
-                        it.creatorEmail == user.email || it.members.contains(user.email)
+                    onLeaveGroup = { groupId -> 
+                        leaveGroup(UUID.fromString(groupId), user.id) 
                     },
-                    userEmail = user.email
+                    groups = getUserGroups(user.id),
+                    userId = user.id,
+                    users = users.map { it.toUser() }
                 )
             }
 
@@ -229,7 +310,7 @@ fun NavigationApp() {
                     onHomeClick = { currentScreen = "home" },
                     onTestsClick = { currentScreen = "tests" },
                     onGroupsClick = { currentScreen = "groups" },
-                    onJoinGroup = { code -> joinGroupByCode(code, user.email) },
+                    onJoinGroup = { code -> joinGroupByCode(code, user.id) },
                     onSuccess = { currentScreen = "groups" }
                 )
             }
@@ -241,32 +322,38 @@ fun NavigationApp() {
                     onTestsClick = { currentScreen = "tests" },
                     onGroupsClick = { currentScreen = "groups" },
                     onCreateGroup = { groupName ->
-                        createGroup(groupName, user.email)
+                        createGroup(groupName, user.id)
                         currentScreen = "groups"
                     }
                 )
             }
 
             "editGroup" -> {
-                val group = groups.find { it.id == editingGroupId }
-                if (group != null && currentUser != null) {
+                val group = editingGroupId?.let { groups.find { it.id == editingGroupId } }
+                val user = currentUser
+                if (group != null && user != null) {
+                    val groupMembers = getGroupMembers(group.id)
+                    val memberUsers = users.map { it.toUser() }.filter { it.id in groupMembers }
                     EditGroupScreen(
                         group = group,
-                        users = users,
+                        owner = users.map { it.toUser() }.find { it.id == group.ownerId },
+                        members = memberUsers,
+                        currentUserId = user.id,
                         onBackClick = { currentScreen = "groups" },
                         onHomeClick = { currentScreen = "home" },
                         onTestsClick = { currentScreen = "tests" },
                         onGroupsClick = { currentScreen = "groups" },
                         onEditClick = { currentScreen = "editGroupName" },
-                        onRemoveMember = { memberEmail -> removeMemberFromGroup(group.id, memberEmail) },
+                        onRemoveMember = { memberId -> removeMemberFromGroup(group.id, UUID.fromString(memberId)) },
                         onCopyLink = { joinCode -> copyTextToClipboard(joinCode) }
                     )
                 }
             }
 
             "editGroupName" -> {
-                val group = groups.find { it.id == editingGroupId }
-                if (group != null && currentUser != null) {
+                val group = editingGroupId?.let { groups.find { it.id == editingGroupId } }
+                val user = currentUser
+                if (group != null && user != null) {
                     EditGroupNameScreen(
                         group = group,
                         onBackClick = { currentScreen = "editGroup" },

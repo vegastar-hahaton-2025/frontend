@@ -12,17 +12,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.data.Test
+import java.util.UUID
 
 @Composable
 fun TestsChooseScreen(
+    availableTests: List<Test>,
     onHomeClick: () -> Unit,
     onGroupsClick: () -> Unit,
-    onTrainingClick: () -> Unit,
-    onTestingClick: () -> Unit
+    onTestsClick: () -> Unit, // для нижнего меню
+    onTrainingClick: (UUID) -> Unit, // testId
+    onTestingClick: (UUID) -> Unit   // testId
 ) {
     Box(
         modifier = Modifier
@@ -35,35 +40,85 @@ fun TestsChooseScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 32.dp)
+                .padding(top = 80.dp, bottom = 100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = onTrainingClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                )
-            ) { Text("Обучение") }
+            Text(
+                text = "Доступные тесты",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineMedium
+            )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = onTestingClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
+            if (availableTests.isEmpty()) {
+                Text(
+                    text = "Нет доступных тестов",
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyLarge
                 )
-            ) { Text("Тестирование") }
+            } else {
+                availableTests.forEach { test ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CreamWhite
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = test.name,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Button(
+                                    onClick = { onTrainingClick(test.id) },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF4CAF50),
+                                        contentColor = Color.White
+                                    )
+                                ) {
+                                    Text("Обучение", style = MaterialTheme.typography.bodyMedium)
+                                }
+
+                                Button(
+                                    onClick = { onTestingClick(test.id) },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF8D1725),
+                                        contentColor = Color.White
+                                    )
+                                ) {
+                                    Text("Экзамен", style = MaterialTheme.typography.bodyMedium)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         Row(
@@ -90,7 +145,7 @@ fun TestsChooseScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = onTestingClick) {
+            IconButton(onClick = onTestsClick) {
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",

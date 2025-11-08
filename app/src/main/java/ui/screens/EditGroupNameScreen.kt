@@ -20,6 +20,7 @@ import androidx.compose.ui.window.Dialog
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.data.Group
 
 @Composable
 fun EditGroupNameScreen(

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.*
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
 import ru.xaxaton.startrainer.utils.*
+import ru.xaxaton.startrainer.data.SimpleUser
 import androidx.compose.material.icons.filled.ArrowBack
 
 @Composable

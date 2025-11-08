@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.data.Group
+import ru.xaxaton.startrainer.data.User
+import java.util.UUID
 
 @Composable
 fun GroupsScreen(
@@ -30,10 +33,11 @@ fun GroupsScreen(
     onTestsClick: () -> Unit,
     onCreateGroupClick: () -> Unit,
     onJoinGroupClick: () -> Unit,
-    onEditGroupClick: (String) -> Unit, // groupId
-    onLeaveGroup: (String) -> Unit, // groupId
+    onEditGroupClick: (String) -> Unit, // groupId as String
+    onLeaveGroup: (String) -> Unit, // groupId as String
     groups: List<Group>,
-    userEmail: String,
+    userId: UUID,
+    users: List<User>,
     onGroupsClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -42,9 +46,9 @@ fun GroupsScreen(
     
     // Фильтрация групп
     val filteredGroups = when (selectedFilter) {
-        "Созданные" -> groups.filter { it.creatorEmail == userEmail }
-        "Состоите" -> groups.filter { it.members.contains(userEmail) && it.creatorEmail != userEmail }
-        else -> groups.filter { it.creatorEmail == userEmail || it.members.contains(userEmail) }
+        "Созданные" -> groups.filter { it.ownerId == userId }
+        "Состоите" -> groups.filter { it.ownerId != userId } // Все группы, где пользователь не владелец
+        else -> groups
     }
 
     Box(
@@ -86,11 +90,9 @@ fun GroupsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 80.dp, bottom = 100.dp),
+                .padding(top = 120.dp, bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            
             Text(
                 text = "Ваши группы",
                 color = Color.White,
@@ -127,25 +129,27 @@ fun GroupsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top
-            ) {
-                if (filteredGroups.isEmpty()) {
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Text(
-                        text = "Группы не найдены",
-                        color = Color.White.copy(alpha = 0.7f),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                } else {
+            if (filteredGroups.isEmpty()) {
+                Text(
+                    text = "Группы не найдены",
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Top
+                ) {
                     filteredGroups.forEach { group ->
-                        val isCreator = group.creatorEmail == userEmail
-                        // Создатель уже в списке участников, поэтому просто считаем размер списка
-                        val memberCount = group.members.size
+                        val isCreator = group.ownerId == userId
+                        // Получаем владельца группы
+                        val owner = users.find { it.id == group.ownerId }
+                        // Подсчитываем участников (включая владельца)
+                        // В реальном приложении это должно приходить из БД через GroupMembership
+                        val memberCount = 1 // Минимум владелец, в реальности нужно считать через GroupMembership
                         
                         Card(
                             modifier = Modifier
@@ -176,7 +180,7 @@ fun GroupsScreen(
                                     // Иконка троеточия для создателя
                                     if (isCreator) {
                                         IconButton(
-                                            onClick = { onEditGroupClick(group.id) },
+                                            onClick = { onEditGroupClick(group.id.toString()) },
                                             modifier = Modifier.size(40.dp)
                                         ) {
                                             Icon(
@@ -191,7 +195,7 @@ fun GroupsScreen(
                                     // Иконка крестика для участника (не создателя)
                                     if (!isCreator) {
                                         IconButton(
-                                            onClick = { onLeaveGroup(group.id) },
+                                            onClick = { onLeaveGroup(group.id.toString()) },
                                             modifier = Modifier.size(40.dp)
                                         ) {
                                             Icon(
