@@ -56,7 +56,7 @@ fun GenerateTestScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 80.dp, bottom = 100.dp),
+                .padding(top = 120.dp, bottom = 100.dp), // Увеличено top для размещения ниже волны
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -92,7 +92,8 @@ fun GenerateTestScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Кнопки выбора сложности
+            // Кнопки выбора сложности - цвет AC8989
+            val difficultyColor = Color(0xFFAC8989)
             Button(
                 onClick = { onDifficultySelected("easy") },
                 modifier = Modifier
@@ -100,7 +101,7 @@ fun GenerateTestScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedDifficulty == "easy") Color(0xFF6B5B3D) else Color(0xFF8B6F47),
+                    containerColor = difficultyColor,
                     contentColor = Color.White
                 )
             ) {
@@ -114,7 +115,7 @@ fun GenerateTestScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedDifficulty == "medium") Color(0xFF6B5B3D) else Color(0xFF8B6F47),
+                    containerColor = difficultyColor,
                     contentColor = Color.White
                 )
             ) {
@@ -128,7 +129,7 @@ fun GenerateTestScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedDifficulty == "hard") Color(0xFF6B5B3D) else Color(0xFF8B6F47),
+                    containerColor = difficultyColor,
                     contentColor = Color.White
                 )
             ) {
@@ -137,7 +138,7 @@ fun GenerateTestScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Кнопка отправки
+            // Кнопка отправки - тем же цветом, что и блок с названием группы (CreamWhite)
             Button(
                 onClick = onSendClick,
                 enabled = selectedDifficulty != null,

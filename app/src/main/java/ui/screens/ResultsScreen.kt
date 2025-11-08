@@ -63,7 +63,7 @@ fun TrainingResultsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 80.dp, bottom = 100.dp)
+                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

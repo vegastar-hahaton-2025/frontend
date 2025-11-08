@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
@@ -58,32 +59,41 @@ fun TrainingLevelScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Кнопка "Обучение" сверху
-            Button(
-                onClick = { /* Уже на экране обучения */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                )
-            ) {
-                Text("Обучение", style = MaterialTheme.typography.titleMedium)
-            }
+            // Надпись "Обучение" (не кнопка)
+            Text(
+                text = "Обучение",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text("Выберите уровень сложности", color = Color.White, style = MaterialTheme.typography.headlineMedium)
+            // Надпись "Выберите уровень сложности" посередине
+            Text(
+                text = "Выберите уровень сложности",
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Кнопки с увеличенным шрифтом
             Button(
                 onClick = { onLevelSelected("easy") },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = CreamWhite, contentColor = Color.Black)
-            ) { Text("Лёгкий") }
+            ) { 
+                Text(
+                    "Лёгкий",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium
+                ) 
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -92,7 +102,13 @@ fun TrainingLevelScreen(
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = CreamWhite, contentColor = Color.Black)
-            ) { Text("Средний") }
+            ) { 
+                Text(
+                    "Средний",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium
+                ) 
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -101,7 +117,13 @@ fun TrainingLevelScreen(
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = CreamWhite, contentColor = Color.Black)
-            ) { Text("Сложный") }
+            ) { 
+                Text(
+                    "Сложный",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium
+                ) 
+            }
         }
 
         // Нижнее навигационное меню

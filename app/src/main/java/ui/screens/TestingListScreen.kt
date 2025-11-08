@@ -60,11 +60,11 @@ fun TestingListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 80.dp, bottom = 100.dp)
+                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок "тестирование"
+            // Заголовок "Тестирование" (с заглавной буквы)
             Button(
                 onClick = { },
                 enabled = false,
@@ -80,7 +80,7 @@ fun TestingListScreen(
                 )
             ) {
                 Text(
-                    text = "тестирование",
+                    text = "Тестирование",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -88,12 +88,13 @@ fun TestingListScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Подзаголовок
+            // Подзаголовок "Доступные вам тестирования" (с заглавной буквы, посередине)
             Text(
-                text = "доступные вам тестирования",
+                text = "Доступные вам тестирования",
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -102,7 +103,9 @@ fun TestingListScreen(
                 Text(
                     text = "Нет доступных тестирований",
                     color = Color.White.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             } else {
                 availableTestings.forEach { testing ->

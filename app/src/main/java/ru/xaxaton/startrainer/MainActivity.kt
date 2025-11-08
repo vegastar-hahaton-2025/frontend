@@ -481,9 +481,13 @@ fun NavigationApp() {
 
             "testingList" -> currentUser?.let { user ->
                 // Получаем тестирования для групп пользователя (кроме созданных им)
+                // Создатель группы не должен видеть тестирования, которые он создал
                 val userGroupIds = getUserGroups(user.id).map { it.id }.toSet()
                 val availableTestings = groupTestings
-                    .filter { it.groupId in userGroupIds && it.creatorId != user.id }
+                    .filter { 
+                        it.groupId in userGroupIds && 
+                        it.creatorId != user.id // Исключаем тестирования, созданные текущим пользователем
+                    }
                     .sortedByDescending { it.publishedDate }
                 
                 TestingListScreen(

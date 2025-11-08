@@ -51,45 +51,57 @@ fun TestSessionScreen(
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
 
-        // Верхняя панель с номером вопроса и кнопкой завершить
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "$currentQuestionIndex/$totalQuestions",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Button(
-                onClick = { showFinishDialog = true },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("Завершить")
-            }
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
-                .padding(top = 80.dp, bottom = 100.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(top = 120.dp, bottom = 100.dp), // Увеличено top для размещения ниже волны
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Карточка с вопросом
+            // Верхняя панель с номером вопроса и кнопкой завершить (ниже верхней волны)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Блок с номером вопроса
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = CreamWhite,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "$currentQuestionIndex/$totalQuestions",
+                        color = Color.Black,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Button(
+                    onClick = { showFinishDialog = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CreamWhite,
+                        contentColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Завершить")
+                }
+            }
+
+            // Карточка с вопросом (под кнопкой и блоком с номером)
+            // Карточка должна располагаться до низа середины экрана
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.5f) // Занимает до середины экрана
+                    .padding(bottom = 24.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -155,35 +167,37 @@ fun TestSessionScreen(
                 }
             }
 
-            // Варианты ответов
+            // Варианты ответов (под карточкой) с правильными цветами
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                // Красный кружок
+                // Красный кружок - C41924
                 AnswerCircle(
-                    color = Color(0xFFE53935),
+                    color = Color(0xFFC41924),
                     isSelected = selectedAnswer == TriageCategory.RED,
                     onClick = { onAnswerSelected(TriageCategory.RED) }
                 )
 
-                // Желтый кружок
+                // Желтый кружок - F7EC84
                 AnswerCircle(
-                    color = Color(0xFFFFB300),
+                    color = Color(0xFFF7EC84),
                     isSelected = selectedAnswer == TriageCategory.YELLOW,
                     onClick = { onAnswerSelected(TriageCategory.YELLOW) }
                 )
 
-                // Зеленый кружок
+                // Зеленый кружок - 34C575
                 AnswerCircle(
-                    color = Color(0xFF4CAF50),
+                    color = Color(0xFF34C575),
                     isSelected = selectedAnswer == TriageCategory.GREEN,
                     onClick = { onAnswerSelected(TriageCategory.GREEN) }
                 )
 
-                // Черный кружок
+                // Черный кружок - 000000
                 AnswerCircle(
-                    color = Color(0xFF212121),
+                    color = Color(0xFF000000),
                     isSelected = selectedAnswer == TriageCategory.BLACK,
                     onClick = { onAnswerSelected(TriageCategory.BLACK) }
                 )

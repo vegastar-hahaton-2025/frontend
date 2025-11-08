@@ -108,7 +108,7 @@ fun TestDetailStatisticsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 80.dp, bottom = 100.dp)
+                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -138,8 +138,8 @@ fun TestDetailStatisticsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Список участников
-            participantResults.forEach { result ->
+            // Список участников (исключая создателя теста)
+            participantResults.filter { it.user.id != test.creatorId }.forEach { result ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
