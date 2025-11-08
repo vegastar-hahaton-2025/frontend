@@ -40,84 +40,48 @@ fun TestsChooseScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp)
-                .padding(top = 80.dp, bottom = 100.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Доступные тесты",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineMedium
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            if (availableTests.isEmpty()) {
-                Text(
-                    text = "Нет доступных тестов",
-                    color = Color.White.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.bodyLarge
+            // Кнопка "Обучение"
+            Button(
+                onClick = { 
+                    // Берем первый доступный тест или создаем временный
+                    val testId = availableTests.firstOrNull()?.id ?: UUID.randomUUID()
+                    onTrainingClick(testId)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CreamWhite,
+                    contentColor = Color.Black
                 )
-            } else {
-                availableTests.forEach { test ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = CreamWhite
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = test.name,
-                                color = Color.Black,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
+            ) {
+                Text("Обучение", style = MaterialTheme.typography.titleMedium)
+            }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Button(
-                                    onClick = { onTrainingClick(test.id) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(48.dp),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF4CAF50),
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Text("Обучение", style = MaterialTheme.typography.bodyMedium)
-                                }
-
-                                Button(
-                                    onClick = { onTestingClick(test.id) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(48.dp),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF8D1725),
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Text("Экзамен", style = MaterialTheme.typography.bodyMedium)
-                                }
-                            }
-                        }
-                    }
-                }
+            // Кнопка "Тестирование"
+            Button(
+                onClick = { 
+                    // Берем первый доступный тест или создаем временный
+                    val testId = availableTests.firstOrNull()?.id ?: UUID.randomUUID()
+                    onTestingClick(testId)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CreamWhite,
+                    contentColor = Color.Black
+                )
+            ) {
+                Text("Тестирование", style = MaterialTheme.typography.titleMedium)
             }
         }
 

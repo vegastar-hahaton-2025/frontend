@@ -20,6 +20,10 @@ import ru.xaxaton.startrainer.data.GroupMembership
 import ru.xaxaton.startrainer.data.GroupTestAssignment
 import ru.xaxaton.startrainer.data.Test
 import ru.xaxaton.startrainer.data.TestSession
+import ru.xaxaton.startrainer.data.Question
+import ru.xaxaton.startrainer.data.TriageCategory
+import ru.xaxaton.startrainer.data.TestMode
+import ru.xaxaton.startrainer.data.TestQuestion
 import java.util.UUID
 
 class MainActivity : ComponentActivity() {
@@ -53,6 +57,17 @@ fun NavigationApp() {
     var tests by remember { mutableStateOf(listOf<Test>()) }
     var groupTestAssignments by remember { mutableStateOf(listOf<GroupTestAssignment>()) }
     var testSessions by remember { mutableStateOf(listOf<TestSession>()) }
+    
+    // Вопросы и связи тест-вопрос (в реальном приложении будут загружаться из API)
+    var questions by remember { mutableStateOf(listOf<Question>()) }
+    var testQuestions by remember { mutableStateOf(listOf<TestQuestion>()) }
+    
+    // Состояние для прохождения теста
+    var currentTestId by remember { mutableStateOf<UUID?>(null) }
+    var currentTestQuestions by remember { mutableStateOf<List<Question>>(emptyList()) }
+    var currentTestAnswers by remember { mutableStateOf<Map<Int, TriageCategory>>(emptyMap()) }
+    var currentQuestionIndex by remember { mutableStateOf(1) }
+    var testDifficulty by remember { mutableStateOf<String?>(null) }
 
     // Получение групп пользователя
     fun getUserGroups(userId: UUID): List<Group> {
@@ -143,6 +158,60 @@ fun NavigationApp() {
         groups = groups.filter { it.id != groupId }
         // Удаляем все членства в этой группе
         groupMemberships = groupMemberships.filter { it.groupId != groupId }
+    }
+
+    // Генерация тестовых вопросов (только для разработки, когда нет данных в БД)
+    fun generateTestQuestions(count: Int): List<Question> {
+        val categories = listOf(
+            TriageCategory.RED,
+            TriageCategory.YELLOW,
+            TriageCategory.GREEN,
+            TriageCategory.BLACK
+        )
+        return (1..count).map { index ->
+            val category = categories[index % categories.size]
+            Question(
+                id = UUID.randomUUID(),
+                description = "Вопрос $index: Описание ситуации для тестирования. Это пример вопроса для обучения.",
+                imageUrl = if (index % 3 == 0) "/images/questions/test-image-$index.jpg" else null,
+                correctAnswer = category,
+                hint = "Подсказка для вопроса $index: Это подсказка, которая поможет вам выбрать правильный ответ."
+            )
+        }
+    }
+
+    // Получение вопросов для теста из БД (в реальном приложении будет запрос к API)
+    fun getTestQuestions(testId: UUID, difficulty: String): List<Question> {
+        // Получаем все связи тест-вопрос для данного теста, отсортированные по Order
+        val testQuestionLinks = testQuestions
+            .filter { it.testId == testId }
+            .sortedBy { it.order }
+        
+        // Определяем количество вопросов в зависимости от сложности
+        val questionCount = when (difficulty) {
+            "easy" -> 10
+            "medium" -> 15
+            "hard" -> 20
+            else -> testQuestionLinks.size
+        }
+        
+        // Берем первые N вопросов (или все, если меньше)
+        val selectedTestQuestions = testQuestionLinks.take(questionCount)
+        
+        // Получаем сами вопросы по их ID
+        val questionIds = selectedTestQuestions.map { it.questionId }.toSet()
+        val testQuestionsList = questions
+            .filter { it.id in questionIds }
+            .sortedBy { question -> 
+                selectedTestQuestions.find { it.questionId == question.id }?.order ?: Int.MAX_VALUE
+            }
+        
+        // Если вопросов в БД нет, генерируем тестовые (для разработки)
+        return if (testQuestionsList.isEmpty()) {
+            generateTestQuestions(questionCount)
+        } else {
+            testQuestionsList
+        }
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -275,7 +344,7 @@ fun NavigationApp() {
                     onGroupsClick = { currentScreen = "groups" },
                     onTestsClick = { currentScreen = "tests" },
                     onTrainingClick = { testId -> 
-                        // TODO: начать сессию обучения
+                        currentTestId = testId
                         currentScreen = "trainingLevel" 
                     },
                     onTestingClick = { testId -> 
@@ -372,13 +441,116 @@ fun NavigationApp() {
                 }
             }
 
-            "trainingLevel" -> TrainingLevelScreen(
-                onBackClick = { currentScreen = "tests" },
-                onHomeClick = { currentScreen = "home" },
-                onGroupsClick = { currentScreen = "groups" },
-                onTestsClick = { currentScreen = "tests" },
-                onLevelSelected = { level -> println("Выбран уровень: $level") }
-            )
+            "trainingLevel" -> currentUser?.let { user ->
+                TrainingLevelScreen(
+                    onBackClick = { 
+                        currentTestId = null
+                        currentScreen = "tests" 
+                    },
+                    onHomeClick = { currentScreen = "home" },
+                    onGroupsClick = { currentScreen = "groups" },
+                    onTestsClick = { currentScreen = "tests" },
+                    onLevelSelected = { level ->
+                        testDifficulty = level
+                        val testId = currentTestId
+                        if (testId != null) {
+                            // Получаем вопросы из теста в зависимости от сложности
+                            currentTestQuestions = getTestQuestions(testId, level)
+                            currentTestAnswers = emptyMap()
+                            currentQuestionIndex = 1
+                            currentScreen = "testSession"
+                        }
+                    }
+                )
+            }
+
+            "testSession" -> currentUser?.let { user ->
+                val testId = currentTestId
+                if (testId != null && currentTestQuestions.isNotEmpty()) {
+                    val currentQuestion = currentTestQuestions[currentQuestionIndex - 1]
+                    val selectedAnswer = currentTestAnswers[currentQuestionIndex]
+                    
+                    TestSessionScreen(
+                        currentQuestionIndex = currentQuestionIndex,
+                        totalQuestions = currentTestQuestions.size,
+                        question = currentQuestion,
+                        selectedAnswer = selectedAnswer,
+                        onAnswerSelected = { answer ->
+                            currentTestAnswers = currentTestAnswers + (currentQuestionIndex to answer)
+                        },
+                        onPreviousQuestion = {
+                            if (currentQuestionIndex > 1) {
+                                currentQuestionIndex--
+                            }
+                        },
+                        onNextQuestion = {
+                            if (currentQuestionIndex < currentTestQuestions.size) {
+                                currentQuestionIndex++
+                            }
+                        },
+                        onFinishClick = {
+                            // Подсчитываем результаты
+                            val correctAnswers = currentTestQuestions.mapIndexed { index, question ->
+                                val userAnswer = currentTestAnswers[index + 1]
+                                userAnswer == question.correctAnswer
+                            }.count { it }
+                            
+                            // Сохраняем сессию
+                            val session = TestSession(
+                                id = UUID.randomUUID(),
+                                testId = testId,
+                                userId = user.id,
+                                mode = TestMode.TRAINING,
+                                startTime = System.currentTimeMillis(),
+                                endTime = System.currentTimeMillis(),
+                                score = (correctAnswers.toDouble() / currentTestQuestions.size * 100)
+                            )
+                            testSessions = testSessions + session
+                            
+                            // Переходим на экран результатов
+                            currentScreen = "testResult"
+                        },
+                        onBackClick = { currentScreen = "trainingLevel" },
+                        onHomeClick = { currentScreen = "home" },
+                        onGroupsClick = { currentScreen = "groups" },
+                        onTestsClick = { currentScreen = "tests" }
+                    )
+                }
+            }
+
+            "testResult" -> {
+                val correctAnswers = currentTestQuestions.mapIndexed { index, question ->
+                    val userAnswer = currentTestAnswers[index + 1]
+                    userAnswer == question.correctAnswer
+                }.count { it }
+                
+                TestResultScreen(
+                    correctAnswers = correctAnswers,
+                    totalQuestions = currentTestQuestions.size,
+                    onShareClick = { /* Уже обработано в экране */ },
+                    onHomeClick = { 
+                        currentTestId = null
+                        currentTestQuestions = emptyList()
+                        currentTestAnswers = emptyMap()
+                        currentQuestionIndex = 1
+                        currentScreen = "home" 
+                    },
+                    onGroupsClick = { 
+                        currentTestId = null
+                        currentTestQuestions = emptyList()
+                        currentTestAnswers = emptyMap()
+                        currentQuestionIndex = 1
+                        currentScreen = "groups" 
+                    },
+                    onTestsClick = { 
+                        currentTestId = null
+                        currentTestQuestions = emptyList()
+                        currentTestAnswers = emptyMap()
+                        currentQuestionIndex = 1
+                        currentScreen = "tests" 
+                    }
+                )
+            }
         }
     }
 }

@@ -53,11 +53,29 @@ fun TrainingLevelScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
+                .padding(horizontal = 32.dp)
+                .padding(top = 80.dp, bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Выберите уровень", color = Color.White, style = MaterialTheme.typography.headlineMedium)
+            // Кнопка "Обучение" сверху
+            Button(
+                onClick = { /* Уже на экране обучения */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CreamWhite,
+                    contentColor = Color.Black
+                )
+            ) {
+                Text("Обучение", style = MaterialTheme.typography.titleMedium)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text("Выберите уровень сложности", color = Color.White, style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(

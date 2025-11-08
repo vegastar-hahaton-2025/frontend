@@ -211,6 +211,27 @@ data class QuestionWithOrder(
 )
 
 /**
+ * Константа для базового URL API (будет настраиваться через конфигурацию)
+ */
+object ApiConfig {
+    // TODO: В реальном приложении это должно быть в конфигурации или получаться из buildConfig
+    const val BASE_URL = "http://localhost:8080" // или ваш URL API
+    
+    /**
+     * Формирует полный URL для изображения из относительного пути
+     */
+    fun getImageUrl(relativePath: String?): String? {
+        return relativePath?.let { 
+            if (it.startsWith("http://") || it.startsWith("https://")) {
+                it // Уже полный URL
+            } else {
+                "$BASE_URL$it" // Добавляем базовый URL
+            }
+        }
+    }
+}
+
+/**
  * Результат сессии теста для отображения
  */
 data class TestSessionResult(
