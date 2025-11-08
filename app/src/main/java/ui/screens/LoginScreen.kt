@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -19,9 +20,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.*
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.utils.*
 import ru.xaxaton.startrainer.data.SimpleUser
-import androidx.compose.material.icons.filled.ArrowBack
 
 @Composable
 fun LoginScreen(
@@ -37,6 +38,21 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
+
+    // ✅ Цвета без обводки, с кремовой меткой при фокусе
+    val fieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = CreamWhite,
+        unfocusedContainerColor = CreamWhite,
+        cursorColor = DarkBurgundy,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedLabelColor = Color.Black,
+        unfocusedLabelColor = Color.Black.copy(alpha = 0.7f),
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black,
+        errorLabelColor = Color.Black,
+        errorCursorColor = DarkBurgundy
+    )
 
     Box(
         modifier = Modifier
@@ -55,7 +71,7 @@ fun LoginScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy, // ← было Color.Black
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -76,15 +92,8 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            val fieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = CreamWhite,
-                unfocusedContainerColor = CreamWhite,
-                cursorColor = Color.Black,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
-
-            OutlinedTextField(
+            // ✅ Без цвета в label — Material сам управляет
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Почта") },
@@ -97,7 +106,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Пароль") },
@@ -141,28 +150,31 @@ fun LoginScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Войти", style = MaterialTheme.typography.titleMedium)
+                Text("Войти", style = MaterialTheme.typography.titleMedium, color = DarkBurgundy)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
+            TextButton(
                 onClick = onPasswordRecoveryClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black
-                ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.height(40.dp)
+                modifier = Modifier
+                    .height(40.dp)
+                    .wrapContentWidth(Alignment.Start),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Восстановить пароль", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Восстановить пароль",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = CreamWhite,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
             if (message.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = message,
-                    color = CreamWhite,
+                    color = CreamWhite, // ← сообщения — кремовые
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -170,6 +182,7 @@ fun LoginScreen(
     }
 }
 
+// 💡 Диалоговое окно оставлено без изменений (оно не использует ваши кастомные цвета)
 @Composable
 fun PasswordResetDialog(
     users: List<SimpleUser>,

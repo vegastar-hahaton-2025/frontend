@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.data.SimpleUser
 
 @Composable
@@ -30,6 +31,19 @@ fun PasswordRecoveryScreen(
     var email by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var shownCode by remember { mutableStateOf("") }
+
+    // ✅ Цвета без обводки — как в LoginScreen
+    val fieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = CreamWhite,
+        unfocusedContainerColor = CreamWhite,
+        cursorColor = DarkBurgundy,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedLabelColor = Color.Black,
+        unfocusedLabelColor = Color.Black.copy(alpha = 0.7f),
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black
+    )
 
     Box(
         modifier = Modifier
@@ -48,7 +62,7 @@ fun PasswordRecoveryScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy, // ← исправлено
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -69,15 +83,8 @@ fun PasswordRecoveryScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            val fieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = CreamWhite,
-                unfocusedContainerColor = CreamWhite,
-                cursorColor = Color.Black,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
-
-            OutlinedTextField(
+            // ✅ TextField вместо OutlinedTextField
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Введите вашу почту") },
@@ -107,7 +114,7 @@ fun PasswordRecoveryScreen(
 
                     onCodeSent(email, code)
 
-                    message = "Код отправлен на почту: $code"
+                    message = "Код отправлен на почту"
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,14 +125,18 @@ fun PasswordRecoveryScreen(
                     contentColor = Color.Black
                 )
             ) {
-                Text("Отправить код на почту", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Отправить код на почту",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = DarkBurgundy // ← как в других экранах
+                )
             }
 
             if (message.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = message,
-                    color = Color.Black,
+                    color = CreamWhite, // ← кремовый, а не чёрный
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -134,7 +145,7 @@ fun PasswordRecoveryScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Код: $shownCode",
-                    color = Color.LightGray,
+                    color = CreamWhite.copy(alpha = 0.7f), // ← тоже кремовый
                     style = MaterialTheme.typography.bodySmall
                 )
             }
