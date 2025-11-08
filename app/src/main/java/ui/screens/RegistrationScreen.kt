@@ -67,7 +67,7 @@ fun RegistrationScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.primary)
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))

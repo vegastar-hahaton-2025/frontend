@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 
 @Composable
 fun PasswordRecoveryCodeScreen(
@@ -29,7 +30,7 @@ fun PasswordRecoveryCodeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
@@ -43,7 +44,7 @@ fun PasswordRecoveryCodeScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy,
                 modifier = Modifier.size(48.dp)
             )
         }

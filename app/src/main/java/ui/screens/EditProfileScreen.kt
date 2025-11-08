@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.data.SimpleUser
 
 @Composable
@@ -36,10 +37,23 @@ fun EditProfileScreen(
     var patronymic by remember { mutableStateOf(user?.patronymic.orEmpty()) }
     var email by remember { mutableStateOf(user?.email.orEmpty()) }
 
+    // ✅ Цвета без обводки — как в других экранах
+    val fieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = CreamWhite,
+        unfocusedContainerColor = CreamWhite,
+        cursorColor = DarkBurgundy,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedLabelColor = Color.Black,
+        unfocusedLabelColor = Color.Black.copy(alpha = 0.7f),
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF8D1725))
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
@@ -53,7 +67,7 @@ fun EditProfileScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy, // ← изменено
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -66,15 +80,7 @@ fun EditProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val fieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = CreamWhite,
-                unfocusedContainerColor = CreamWhite,
-                cursorColor = Color.Black,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
-
-            OutlinedTextField(
+            TextField(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Имя") },
@@ -86,7 +92,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = family,
                 onValueChange = { family = it },
                 label = { Text("Фамилия") },
@@ -98,7 +104,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = patronymic,
                 onValueChange = { patronymic = it },
                 label = { Text("Отчество") },
@@ -110,7 +116,7 @@ fun EditProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Почта") },
@@ -133,7 +139,11 @@ fun EditProfileScreen(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Смена пароля")
+                Text(
+                    text = "Смена пароля",
+                    color = DarkBurgundy, // ← жирный кремовый не нужен, но цвет как в других кнопках
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -159,7 +169,11 @@ fun EditProfileScreen(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Сохранить изменения")
+                Text(
+                    text = "Сохранить изменения",
+                    color = DarkBurgundy,
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
 
@@ -175,15 +189,15 @@ fun EditProfileScreen(
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
-                    tint = Color.Black,
+                    tint = DarkBurgundy, // ← изменено
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = onGroupsClick) { // Чат → Groups
+            IconButton(onClick = onGroupsClick) {
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
-                    tint = Color.Black,
+                    tint = DarkBurgundy, // ← изменено
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -191,7 +205,7 @@ fun EditProfileScreen(
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",
-                    tint = Color.Black,
+                    tint = DarkBurgundy, // ← изменено
                     modifier = Modifier.size(36.dp)
                 )
             }

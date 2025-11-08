@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.data.SimpleUser
 import ru.xaxaton.startrainer.utils.hashPasswordWithSalt
 import ru.xaxaton.startrainer.utils.verifyPassword
@@ -36,10 +37,23 @@ fun ChangePasswordScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    // ✅ Цвета без обводки — как в других экранах
+    val fieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = CreamWhite,
+        unfocusedContainerColor = CreamWhite,
+        cursorColor = DarkBurgundy,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedLabelColor = Color.Black,
+        unfocusedLabelColor = Color.Black.copy(alpha = 0.7f),
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF8D1725))
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
@@ -53,7 +67,7 @@ fun ChangePasswordScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy, // ← исправлено
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -65,15 +79,7 @@ fun ChangePasswordScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val fieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = CreamWhite,
-                unfocusedContainerColor = CreamWhite,
-                cursorColor = Color.Black,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
-
-            OutlinedTextField(
+            TextField(
                 value = currentPassword,
                 onValueChange = {
                     currentPassword = it
@@ -83,12 +89,13 @@ fun ChangePasswordScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                colors = fieldColors
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = newPassword,
                 onValueChange = {
                     newPassword = it
@@ -98,12 +105,13 @@ fun ChangePasswordScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                colors = fieldColors
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = confirmPassword,
                 onValueChange = {
                     confirmPassword = it
@@ -113,14 +121,14 @@ fun ChangePasswordScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                colors = fieldColors
+                colors = fieldColors,
+                shape = RoundedCornerShape(12.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 onClick = {
-                    // Проверки в нужном порядке и с понятными сообщениями
                     when {
                         currentPassword.isBlank() ->
                             errorMessage = "Введите текущий пароль"
@@ -133,7 +141,6 @@ fun ChangePasswordScreen(
                         newPassword != confirmPassword ->
                             errorMessage = "Пароли не совпадают"
                         else -> {
-                            // Всё верно — обновляем хеш и соль
                             val (newHash, newSalt) = hashPasswordWithSalt(newPassword)
                             val updatedUser = user.copy(
                                 passwordHash = newHash,
@@ -152,14 +159,18 @@ fun ChangePasswordScreen(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Сохранить изменения")
+                Text(
+                    text = "Сохранить изменения",
+                    color = DarkBurgundy,
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
 
             if (errorMessage != null) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = errorMessage!!,
-                    color = Color.Red,
+                    color = CreamWhite, // ← кремовый, а не красный
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -177,15 +188,15 @@ fun ChangePasswordScreen(
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
-                    tint = Color.Black,
+                    tint = DarkBurgundy, // ← исправлено
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = onGroupsClick) { // Чат → Groups
+            IconButton(onClick = onGroupsClick) {
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
-                    tint = Color.Black,
+                    tint = DarkBurgundy, // ← исправлено
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -193,7 +204,7 @@ fun ChangePasswordScreen(
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",
-                    tint = Color.Black,
+                    tint = DarkBurgundy, // ← исправлено
                     modifier = Modifier.size(36.dp)
                 )
             }

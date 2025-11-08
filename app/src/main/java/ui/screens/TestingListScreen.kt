@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.data.GroupTesting
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,7 +30,7 @@ import java.util.*
 fun TestingListScreen(
     availableTestings: List<GroupTesting>,
     onBackClick: () -> Unit,
-    onTestingClick: (GroupTesting) -> Unit, // Callback при клике на тестирование
+    onTestingClick: (GroupTesting) -> Unit,
     onHomeClick: () -> Unit,
     onGroupsClick: () -> Unit,
     onTestsClick: () -> Unit
@@ -37,7 +38,7 @@ fun TestingListScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF8D1725))
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
@@ -51,7 +52,7 @@ fun TestingListScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy,
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -60,44 +61,40 @@ fun TestingListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 160.dp, bottom = 100.dp) // Увеличено top до 160.dp
+                .padding(top = 120.dp, bottom = 100.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок "Тестирование"
-            Button(
-                onClick = { },
-                enabled = false,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CreamWhite,
-                    contentColor = Color.Black,
-                    disabledContainerColor = CreamWhite,
-                    disabledContentColor = Color.Black
-                )
-            ) {
-                Text(
-                    text = "Тестирование",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp)) // Увеличено до 32.dp
-
-            // Подзаголовок "Доступные вам тестирования" (с заглавной буквы, посередине)
             Text(
-                text = "Доступные вам тестирования",
+                text = "Тестирование",
                 color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(24.dp)) // Увеличено до 24.dp
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // 🔷 Подзаголовок на молочном фоне
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = CreamWhite)
+            ) {
+                Text(
+                    text = "Доступные вам тестирования",
+                    color = DarkBurgundy,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             if (availableTestings.isEmpty()) {
                 Text(
@@ -112,7 +109,7 @@ fun TestingListScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 12.dp) // Увеличен вертикальный отступ
+                            .padding(vertical = 12.dp)
                             .clickable { onTestingClick(testing) },
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
@@ -122,7 +119,7 @@ fun TestingListScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp) // Увеличен внутренний отступ
+                                .padding(20.dp)
                         ) {
                             Text(
                                 text = testing.groupName,
@@ -131,14 +128,13 @@ fun TestingListScreen(
                                 fontWeight = FontWeight.Bold
                             )
 
-                            Spacer(modifier = Modifier.height(12.dp)) // Увеличен отступ
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            // Название сложности
                             val difficultyName = when (testing.difficulty) {
-                                "easy" -> "легкий уровень"
+                                "easy" -> "лёгкий уровень"
                                 "medium" -> "средний уровень"
                                 "hard" -> "тяжёлый уровень"
-                                else -> "легкий уровень"
+                                else -> "лёгкий уровень"
                             }
                             Text(
                                 text = difficultyName,
@@ -146,9 +142,8 @@ fun TestingListScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
 
-                            Spacer(modifier = Modifier.height(12.dp)) // Увеличен отступ
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            // Дата публикации
                             val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
                             val date = Date(testing.publishedDate)
                             Text(
@@ -162,7 +157,6 @@ fun TestingListScreen(
             }
         }
 
-        // Нижнее меню
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -175,7 +169,7 @@ fun TestingListScreen(
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -183,7 +177,7 @@ fun TestingListScreen(
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -191,7 +185,7 @@ fun TestingListScreen(
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }

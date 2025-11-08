@@ -24,6 +24,7 @@ import ru.xaxaton.startrainer.data.UserAnswer
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 
 @Composable
 fun TrainingSessionDetailScreen(
@@ -44,7 +45,7 @@ fun TrainingSessionDetailScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF8D1725))
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
@@ -58,7 +59,7 @@ fun TrainingSessionDetailScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy,
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -298,7 +299,7 @@ fun TrainingSessionDetailScreen(
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -306,7 +307,7 @@ fun TrainingSessionDetailScreen(
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -314,7 +315,7 @@ fun TrainingSessionDetailScreen(
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }

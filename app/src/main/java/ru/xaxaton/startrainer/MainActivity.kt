@@ -380,13 +380,25 @@ fun NavigationApp() {
             }
 
             "testingResults" -> currentUser?.let { user ->
-                // TODO: Реализовать экран результатов тестирования
-                // Пока показываем пустой экран
-                TrainingResultsScreen(
-                    testSessions = emptyList(),
+                // Получаем только сессии тестирования (экзаменационный режим)
+                val testingSessions = testSessions
+                    .filter { it.userId == user.id && it.mode == TestMode.EXAM }
+                    .sortedByDescending { it.endTime }
+                
+                // Создаем мапу sessionId -> difficulty для каждой сессии
+                val sessionIdToDifficulty = testingSessions.associate { session ->
+                    val difficulty = sessionDifficulties[session.id] ?: "easy"
+                    session.id to difficulty
+                }
+                
+                TestingResultsScreen(
+                    testSessions = testingSessions,
                     tests = tests,
-                    sessionDifficulties = emptyMap(),
-                    onSessionClick = { },
+                    sessionDifficulties = sessionIdToDifficulty,
+                    onSessionClick = { sessionId ->
+                        selectedSessionId = sessionId
+                        currentScreen = "testingSessionDetail"
+                    },
                     onBackClick = { currentScreen = "resultsType" },
                     onHomeClick = { currentScreen = "home" },
                     onGroupsClick = { currentScreen = "groups" },
@@ -527,6 +539,39 @@ fun NavigationApp() {
                             onBackClick = { 
                                 selectedSessionId = null
                                 currentScreen = "trainingResults"
+                            },
+                            onHomeClick = { currentScreen = "home" },
+                            onGroupsClick = { currentScreen = "groups" },
+                            onTestsClick = { currentScreen = "tests" }
+                        )
+                    }
+                }
+            }
+
+            "testingSessionDetail" -> selectedSessionId?.let { sessionId ->
+                val session = testSessions.find { it.id == sessionId }
+                if (session != null) {
+                    // Получаем ответы для этой сессии (в порядке сохранения)
+                    val sessionAnswers = userAnswers.filter { it.testSessionId == sessionId }
+                    
+                    // Получаем вопросы из ответов (в правильном порядке)
+                    val sessionQuestions = sessionAnswers.mapNotNull { answer ->
+                        questions.find { it.id == answer.questionId }
+                    }
+                    
+                    var currentDetailQuestionIndex by remember { mutableStateOf(1) }
+                    
+                    if (sessionQuestions.isNotEmpty()) {
+                        TrainingSessionDetailScreen(
+                            questions = sessionQuestions,
+                            userAnswers = sessionAnswers,
+                            currentQuestionIndex = currentDetailQuestionIndex,
+                            onQuestionIndexChange = { newIndex ->
+                                currentDetailQuestionIndex = newIndex
+                            },
+                            onBackClick = { 
+                                selectedSessionId = null
+                                currentScreen = "testingResults"
                             },
                             onHomeClick = { currentScreen = "home" },
                             onGroupsClick = { currentScreen = "groups" },

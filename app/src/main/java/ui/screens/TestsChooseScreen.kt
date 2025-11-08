@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.data.Test
 import java.util.UUID
 
@@ -32,7 +33,7 @@ fun TestsChooseScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF8D1725))
+            .background(DarkBurgundy)
     ) {
         TopCreamWave(modifier = Modifier.align(Alignment.TopCenter))
         BottomCreamWave(modifier = Modifier.align(Alignment.BottomCenter))
@@ -57,10 +58,10 @@ fun TestsChooseScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = CreamWhite,
-                    contentColor = Color.Black
+                    contentColor = DarkBurgundy
                 )
             ) {
-                Text("Обучение", style = MaterialTheme.typography.titleMedium)
+                Text("Обучение", style = MaterialTheme.typography.titleLarge)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -76,10 +77,10 @@ fun TestsChooseScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = CreamWhite,
-                    contentColor = Color.Black
+                    contentColor = DarkBurgundy
                 )
             ) {
-                Text("Тестирование", style = MaterialTheme.typography.titleMedium)
+                Text("Тестирование", style = MaterialTheme.typography.titleLarge)
             }
         }
 
@@ -95,7 +96,7 @@ fun TestsChooseScreen(
                 Icon(
                     imageVector = Icons.Filled.Home,
                     contentDescription = "Домашняя страница",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -103,7 +104,7 @@ fun TestsChooseScreen(
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -111,7 +112,7 @@ fun TestsChooseScreen(
                 Icon(
                     imageVector = Icons.Filled.Description,
                     contentDescription = "Тесты",
-                    tint = Color.Black,
+                    tint = DarkBurgundy,
                     modifier = Modifier.size(36.dp)
                 )
             }
