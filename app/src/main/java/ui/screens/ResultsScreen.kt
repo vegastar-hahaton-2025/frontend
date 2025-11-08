@@ -76,7 +76,7 @@ fun TrainingResultsScreen(
                 )
             ) {
                 Text(
-                    text = "Мори результаты\nобучений",
+                    text = "Мои результаты\nобучений",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
