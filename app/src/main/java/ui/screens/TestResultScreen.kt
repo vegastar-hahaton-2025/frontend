@@ -26,7 +26,6 @@ fun TestResultScreen(
     correctAnswers: Int,
     totalQuestions: Int,
     onShareClick: (() -> Unit)? = null, // Опциональный callback для поделиться
-    onBackClick: (() -> Unit)? = null, // Опциональный callback для назад
     onHomeClick: () -> Unit,
     onGroupsClick: () -> Unit,
     onTestsClick: () -> Unit

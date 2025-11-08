@@ -60,11 +60,11 @@ fun TestingListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
+                .padding(top = 160.dp, bottom = 100.dp) // Увеличено top до 160.dp
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок "Тестирование" (с заглавной буквы)
+            // Заголовок "Тестирование"
             Button(
                 onClick = { },
                 enabled = false,
@@ -86,7 +86,7 @@ fun TestingListScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // Увеличено до 32.dp
 
             // Подзаголовок "Доступные вам тестирования" (с заглавной буквы, посередине)
             Text(
@@ -97,7 +97,7 @@ fun TestingListScreen(
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp)) // Увеличено до 24.dp
 
             if (availableTestings.isEmpty()) {
                 Text(
@@ -112,7 +112,7 @@ fun TestingListScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                            .padding(vertical = 12.dp) // Увеличен вертикальный отступ
                             .clickable { onTestingClick(testing) },
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
@@ -122,7 +122,7 @@ fun TestingListScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(20.dp) // Увеличен внутренний отступ
                         ) {
                             Text(
                                 text = testing.groupName,
@@ -131,7 +131,7 @@ fun TestingListScreen(
                                 fontWeight = FontWeight.Bold
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp)) // Увеличен отступ
 
                             // Название сложности
                             val difficultyName = when (testing.difficulty) {
@@ -146,7 +146,7 @@ fun TestingListScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp)) // Увеличен отступ
 
                             // Дата публикации
                             val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
@@ -198,7 +198,3 @@ fun TestingListScreen(
         }
     }
 }
-
-
-
-

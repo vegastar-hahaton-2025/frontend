@@ -749,7 +749,6 @@ fun NavigationApp() {
                             // Переходим на экран результатов
                             currentScreen = "testResult"
                         },
-                        onBackClick = { currentScreen = "trainingLevel" },
                         onHomeClick = { currentScreen = "home" },
                         onGroupsClick = { currentScreen = "groups" },
                         onTestsClick = { currentScreen = "tests" },
@@ -828,7 +827,6 @@ fun NavigationApp() {
                             // Переходим на экран результатов тестирования
                             currentScreen = "testingResult"
                         },
-                        onBackClick = { currentScreen = "testingList" },
                         onHomeClick = { currentScreen = "home" },
                         onGroupsClick = { currentScreen = "groups" },
                         onTestsClick = { currentScreen = "tests" },
@@ -881,7 +879,6 @@ fun NavigationApp() {
                 TestResultScreen(
                     correctAnswers = correctAnswers,
                     totalQuestions = totalQuestions,
-                    onBackClick = { currentScreen = "testingList" },
                     onHomeClick = { currentScreen = "home" },
                     onGroupsClick = { currentScreen = "groups" },
                     onTestsClick = { currentScreen = "tests" }

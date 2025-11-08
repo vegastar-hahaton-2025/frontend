@@ -61,7 +61,7 @@ fun TestStatisticsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
+                .padding(top = 160.dp, bottom = 100.dp) // Увеличено top до 160.dp
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -85,7 +85,7 @@ fun TestStatisticsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // Увеличено до 32.dp
 
             if (tests.isEmpty()) {
                 Text(
@@ -210,6 +210,3 @@ fun TestStatisticsScreen(
         }
     }
 }
-
-
-

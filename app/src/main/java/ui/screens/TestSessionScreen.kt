@@ -34,7 +34,6 @@ fun TestSessionScreen(
     onPreviousQuestion: () -> Unit,
     onNextQuestion: () -> Unit,
     onFinishClick: () -> Unit,
-    onBackClick: () -> Unit,
     onHomeClick: () -> Unit,
     onGroupsClick: () -> Unit,
     onTestsClick: () -> Unit,
@@ -55,14 +54,14 @@ fun TestSessionScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
-                .padding(top = 120.dp, bottom = 100.dp), // Увеличено top для размещения ниже волны
+                .padding(top = 160.dp, bottom = 100.dp), // Увеличено top до 160.dp
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Верхняя панель с номером вопроса и кнопкой завершить (ниже верхней волны)
+            // Верхняя панель с номером вопроса и кнопкой завершить (смещена ниже)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 8.dp), // Уменьшен отступ снизу
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -83,25 +82,32 @@ fun TestSessionScreen(
                     )
                 }
 
+                // Кнопка завершить с увеличенным текстом
                 Button(
                     onClick = { showFinishDialog = true },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = CreamWhite,
                         contentColor = Color.Black
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.height(48.dp) // Увеличена высота кнопки
                 ) {
-                    Text("Завершить")
+                    Text(
+                        text = "Завершить",
+                        style = MaterialTheme.typography.titleMedium, // Увеличен размер текста
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
-            // Карточка с вопросом (под кнопкой и блоком с номером)
-            // Карточка должна располагаться до низа середины экрана
+            Spacer(modifier = Modifier.height(32.dp)) // Добавлен отступ перед карточкой
+
+            // Карточка с вопросом (смещена ниже)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.5f) // Занимает до середины экрана
-                    .padding(bottom = 24.dp),
+                    .padding(bottom = 32.dp), // Увеличен отступ снизу
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -167,11 +173,13 @@ fun TestSessionScreen(
                 }
             }
 
-            // Варианты ответов (под карточкой) с правильными цветами
+            Spacer(modifier = Modifier.height(24.dp)) // Добавлен отступ перед вариантами ответов
+
+            // Варианты ответов (смещены ниже)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp),
+                    .padding(bottom = 40.dp), // Увеличен отступ снизу
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 // Красный кружок - C41924
@@ -203,35 +211,37 @@ fun TestSessionScreen(
                 )
             }
 
-            // Навигация между вопросами
+            // Навигация между вопросами (смещена ниже)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp), // Добавлен отступ снизу
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = onPreviousQuestion,
                     enabled = currentQuestionIndex > 1,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(56.dp) // Увеличена размер кнопки
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Предыдущий вопрос",
                         tint = if (currentQuestionIndex > 1) Color.White else Color.White.copy(alpha = 0.5f),
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp) // Увеличена размер иконки
                     )
                 }
 
                 IconButton(
                     onClick = onNextQuestion,
                     enabled = currentQuestionIndex < totalQuestions,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(56.dp) // Увеличена размер кнопки
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowForward,
                         contentDescription = "Следующий вопрос",
                         tint = if (currentQuestionIndex < totalQuestions) Color.White else Color.White.copy(alpha = 0.5f),
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp) // Увеличена размер иконки
                     )
                 }
             }
@@ -329,4 +339,3 @@ fun AnswerCircle(
         }
     }
 }
-

@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
@@ -85,7 +84,8 @@ fun EditGroupNameScreen(
                     Text(
                         text = "Редактирование группы",
                         color = Color.Black,
-                        style = MaterialTheme.typography.headlineMedium
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally)
                     )
                 }
             }
@@ -213,7 +213,7 @@ fun EditGroupNameScreen(
                     modifier = Modifier.size(36.dp)
                 )
             }
-            IconButton(onClick = onGroupsClick) { // Чат → Groups
+            IconButton(onClick = onGroupsClick) {
                 Icon(
                     imageVector = Icons.Filled.ChatBubbleOutline,
                     contentDescription = "Группы",
@@ -232,5 +232,3 @@ fun EditGroupNameScreen(
         }
     }
 }
-
-

@@ -54,22 +54,25 @@ fun TestDetailStatisticsScreen(
         else -> 10
     }
 
-    // Создаем список результатов участников
-    val participantResults = participants.map { user ->
+    // Фильтруем участников - исключаем создателя теста
+    val filteredParticipants = participants.filter { it.id != test.creatorId }
+
+    // Создаем список результатов участников (без создателя)
+    val participantResults = filteredParticipants.map { user ->
         // Ищем сессию для этого пользователя и теста
-        val session = testSessions.find { 
-            it.userId == user.id && 
-            it.testId == test.testId && 
-            it.mode == TestMode.EXAM // Только экзаменационные режимы
+        val session = testSessions.find {
+            it.userId == user.id &&
+                    it.testId == test.testId &&
+                    it.mode == TestMode.EXAM // Только экзаменационные режимы
         }
-        
+
         val correctAnswers = if (session != null && session.score != null) {
             // Вычисляем правильные ответы из процента
             ((session.score!! / 100.0) * totalQuestions).toInt()
         } else {
             0
         }
-        
+
         ParticipantResult(
             user = user,
             session = session,
@@ -80,7 +83,7 @@ fun TestDetailStatisticsScreen(
 
     // Подсчитываем, сколько участников прошли тест (имеют завершенную сессию)
     val passedCount = participantResults.count { it.session != null && it.session.endTime != null }
-    val totalParticipants = participants.size
+    val totalParticipants = filteredParticipants.size
 
     Box(
         modifier = Modifier
@@ -108,7 +111,7 @@ fun TestDetailStatisticsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
+                .padding(top = 160.dp, bottom = 100.dp) // Увеличено top до 160.dp
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -127,7 +130,11 @@ fun TestDetailStatisticsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "$passedCount/$totalParticipants прошли тест",
+                        text = if (totalParticipants == 0) {
+                            "В группе пока нет участников"
+                        } else {
+                            "$passedCount/$totalParticipants прошли тест"
+                        },
                         color = Color.Black,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
@@ -136,55 +143,65 @@ fun TestDetailStatisticsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // Увеличено до 32.dp
 
-            // Список участников (исключая создателя теста)
-            participantResults.filter { it.user.id != test.creatorId }.forEach { result ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CreamWhite
-                    )
-                ) {
-                    Row(
+            if (totalParticipants == 0) {
+                Text(
+                    text = "Добавьте участников в группу, чтобы увидеть их результаты",
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                // Список участников (уже исключая создателя теста)
+                participantResults.forEach { result ->
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(vertical = 12.dp), // Увеличен отступ
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CreamWhite
+                        )
                     ) {
-                        // Имя участника
-                        Column(
-                            modifier = Modifier.weight(1f)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp), // Увеличен внутренний отступ
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = result.user.getFormattedName(),
-                                color = Color.Black,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                            // Имя участника
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = result.user.getFormattedName(),
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
 
-                        // Результат или статус "не проходил"
-                        if (result.session != null && result.session.endTime != null) {
-                            // Показываем баллы
-                            Text(
-                                text = "${result.correctAnswers}/${result.totalQuestions}",
-                                color = Color.Black,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        } else {
-                            // Показываем, что не проходил
-                            Text(
-                                text = "Не проходил",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                            )
+                            // Результат или статус "не проходил"
+                            if (result.session != null && result.session.endTime != null) {
+                                // Показываем баллы
+                                Text(
+                                    text = "${result.correctAnswers}/${result.totalQuestions}",
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            } else {
+                                // Показываем, что не проходил
+                                Text(
+                                    text = "Не проходил",
+                                    color = Color.Gray,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                )
+                            }
                         }
                     }
                 }
@@ -227,4 +244,3 @@ fun TestDetailStatisticsScreen(
         }
     }
 }
-

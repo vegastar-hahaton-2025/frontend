@@ -63,7 +63,7 @@ fun TrainingResultsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 120.dp, bottom = 100.dp) // Увеличено top для размещения ниже волны
+                .padding(top = 160.dp, bottom = 100.dp) // Увеличено top до 160.dp
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -76,7 +76,7 @@ fun TrainingResultsScreen(
                 )
             ) {
                 Text(
-                    text = "МОИ РЕЗУЛЬТАТЫ\nОБУЧЕНИЙ",
+                    text = "Мори результаты\nобучений",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
@@ -87,7 +87,7 @@ fun TrainingResultsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp)) // Увеличено до 32.dp
 
             if (testSessions.isEmpty()) {
                 Text(
@@ -103,7 +103,7 @@ fun TrainingResultsScreen(
 
                 sortedSessions.forEach { session ->
                     val difficulty = sessionDifficulties[session.id] ?: "easy"
-                    
+
                     // Вычисляем правильные ответы из процента
                     val totalQuestions = when (difficulty) {
                         "easy" -> 10
@@ -112,7 +112,7 @@ fun TrainingResultsScreen(
                         else -> 10
                     }
                     val correctAnswers = ((session.score!! / 100.0) * totalQuestions).toInt()
-                    
+
                     // Название сложности
                     val difficultyName = when (difficulty) {
                         "easy" -> "лёгкий"
@@ -120,7 +120,7 @@ fun TrainingResultsScreen(
                         "hard" -> "тяжёлый"
                         else -> "лёгкий"
                     }
-                    
+
                     // Цвет для сложности
                     val difficultyColor = when (difficulty) {
                         "easy" -> Color(0xFF81C784) // Зелёный

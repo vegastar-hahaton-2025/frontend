@@ -56,7 +56,7 @@ fun GenerateTestScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .padding(top = 120.dp, bottom = 100.dp), // Увеличено top для размещения ниже волны
+                .padding(top = 160.dp, bottom = 100.dp), // Увеличено top до 160.dp
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -84,13 +84,13 @@ fun GenerateTestScreen(
 
             // Инструкция
             Text(
-                text = "выберите уровень\nсложности",
+                text = "Выберите уровень\nсложности",
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp)) // Увеличено до 16.dp
 
             // Кнопки выбора сложности - цвет AC8989
             val difficultyColor = Color(0xFFAC8989)
@@ -136,7 +136,7 @@ fun GenerateTestScreen(
                 Text("сложный", style = MaterialTheme.typography.titleMedium)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp)) // Увеличено до 24.dp
 
             // Кнопка отправки - тем же цветом, что и блок с названием группы (CreamWhite)
             Button(
@@ -154,7 +154,7 @@ fun GenerateTestScreen(
                 )
             ) {
                 Text(
-                    "отправить тестирование группе",
+                    "Отправить тестирование группе",
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -196,4 +196,3 @@ fun GenerateTestScreen(
         }
     }
 }
-
