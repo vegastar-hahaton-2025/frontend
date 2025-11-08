@@ -177,10 +177,17 @@ fun NavigationApp() {
     }
 
     // Удаление группы
+    // Согласно структуре БД, при удалении группы каскадно удаляются:
+    // - GroupMemberships (CASCADE)
+    // - GroupTestAssignments (CASCADE)
     fun deleteGroup(groupId: UUID) {
         groups = groups.filter { it.id != groupId }
         // Удаляем все членства в этой группе
         groupMemberships = groupMemberships.filter { it.groupId != groupId }
+        // Удаляем все назначения тестов этой группе
+        groupTestAssignments = groupTestAssignments.filter { it.groupId != groupId }
+        // Удаляем локальные DTO для отображения
+        groupTestings = groupTestings.filter { it.groupId != groupId }
     }
 
     // Генерация тестовых вопросов (только для разработки, когда нет данных в БД)
@@ -204,37 +211,33 @@ fun NavigationApp() {
     }
 
     // Получение вопросов для теста из БД (в реальном приложении будет запрос к API)
-    fun getTestQuestions(testId: UUID, difficulty: String): List<Question> {
+    // Согласно структуре БД, вопросы теста определяются через TestQuestions
+    fun getTestQuestions(testId: UUID, difficulty: String? = null): List<Question> {
         // Получаем все связи тест-вопрос для данного теста, отсортированные по Order
         val testQuestionLinks = testQuestions
             .filter { it.testId == testId }
             .sortedBy { it.order }
         
-        // Определяем количество вопросов в зависимости от сложности
+        // Если есть связи в БД, используем их
+        if (testQuestionLinks.isNotEmpty()) {
+            // Получаем сами вопросы по их ID из TestQuestions
+            val questionIds = testQuestionLinks.map { it.questionId }.toSet()
+            return questions
+                .filter { it.id in questionIds }
+                .sortedBy { question -> 
+                    testQuestionLinks.find { it.questionId == question.id }?.order ?: Int.MAX_VALUE
+                }
+        }
+        
+        // Если вопросов в БД нет, генерируем тестовые (для разработки)
+        // Используем difficulty только для определения количества при генерации
         val questionCount = when (difficulty) {
             "easy" -> 10
             "medium" -> 15
             "hard" -> 20
-            else -> testQuestionLinks.size
+            else -> 10
         }
-        
-        // Берем первые N вопросов (или все, если меньше)
-        val selectedTestQuestions = testQuestionLinks.take(questionCount)
-        
-        // Получаем сами вопросы по их ID
-        val questionIds = selectedTestQuestions.map { it.questionId }.toSet()
-        val testQuestionsList = questions
-            .filter { it.id in questionIds }
-            .sortedBy { question -> 
-                selectedTestQuestions.find { it.questionId == question.id }?.order ?: Int.MAX_VALUE
-            }
-        
-        // Если вопросов в БД нет, генерируем тестовые (для разработки)
-        return if (testQuestionsList.isEmpty()) {
-            generateTestQuestions(questionCount)
-        } else {
-            testQuestionsList
-        }
+        return generateTestQuestions(questionCount)
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -405,20 +408,8 @@ fun NavigationApp() {
                         },
                         onSendClick = {
                             if (selectedDifficulty != null) {
-                                // Создаем тестирование для группы
+                                // Создаем тест согласно структуре БД
                                 val testId = UUID.randomUUID()
-                                val testing = GroupTesting(
-                                    id = UUID.randomUUID(),
-                                    testId = testId,
-                                    groupId = groupId,
-                                    groupName = group.name,
-                                    difficulty = selectedDifficulty!!,
-                                    publishedDate = System.currentTimeMillis(),
-                                    creatorId = group.ownerId
-                                )
-                                groupTestings = groupTestings + testing
-                                
-                                // Создаем тест
                                 val test = Test(
                                     id = testId,
                                     name = "${group.name} - ${when(selectedDifficulty) {
@@ -430,6 +421,53 @@ fun NavigationApp() {
                                     creatorId = group.ownerId
                                 )
                                 tests = tests + test
+                                
+                                // Создаем назначение теста группе (GroupTestAssignment в БД)
+                                val assignment = GroupTestAssignment(
+                                    groupId = groupId,
+                                    testId = testId
+                                )
+                                groupTestAssignments = groupTestAssignments + assignment
+                                
+                                // Определяем количество вопросов в зависимости от сложности
+                                val questionCount = when (selectedDifficulty) {
+                                    "easy" -> 10
+                                    "medium" -> 15
+                                    "hard" -> 20
+                                    else -> 10
+                                }
+                                
+                                // Выбираем вопросы из пула (если есть доступные вопросы)
+                                val availableQuestions = if (questions.isNotEmpty()) {
+                                    questions.shuffled().take(questionCount)
+                                } else {
+                                    // Если вопросов нет, генерируем тестовые
+                                    generateTestQuestions(questionCount).also { generated ->
+                                        questions = questions + generated
+                                    }
+                                }
+                                
+                                // Создаем связи тест-вопрос (TestQuestion в БД)
+                                val newTestQuestions = availableQuestions.mapIndexed { index, question ->
+                                    TestQuestion(
+                                        testId = testId,
+                                        questionId = question.id,
+                                        order = index + 1
+                                    )
+                                }
+                                testQuestions = testQuestions + newTestQuestions
+                                
+                                // Создаем DTO для отображения (GroupTesting - не сущность БД)
+                                val testing = GroupTesting(
+                                    id = testId, // Используем testId как идентификатор
+                                    testId = testId,
+                                    groupId = groupId,
+                                    groupName = group.name,
+                                    difficulty = selectedDifficulty!!,
+                                    publishedDate = System.currentTimeMillis(),
+                                    creatorId = group.ownerId
+                                )
+                                groupTestings = groupTestings + testing
                                 
                                 currentScreen = "editGroup"
                             }

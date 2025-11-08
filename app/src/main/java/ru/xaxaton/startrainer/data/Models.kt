@@ -136,15 +136,21 @@ data class TestQuestion(
 
 /**
  * Модель сессии теста, соответствующая TestSession из базы данных
+ * 
+ * Соответствие с БД:
+ * - startTime/endTime: в БД это DateTime (timestamp with time zone),
+ *   здесь Long (Unix timestamp в миллисекундах) для удобства работы на Android
+ * - score: в БД это decimal? (numeric(5,2)), здесь Double? (0-100)
+ * - mode: в БД это smallint (1=Training, 2=Exam), здесь enum TestMode
  */
 data class TestSession(
     val id: UUID,
     val testId: UUID,
     val userId: UUID,
     val mode: TestMode,
-    val startTime: Long, // Unix timestamp в миллисекундах
-    val endTime: Long?, // Unix timestamp в миллисекундах
-    val score: Double? // Процент правильных ответов (0-100)
+    val startTime: Long, // Unix timestamp в миллисекундах (в БД: DateTime)
+    val endTime: Long?, // Unix timestamp в миллисекундах (в БД: DateTime?)
+    val score: Double? // Процент правильных ответов (0-100), в БД: decimal? (numeric(5,2))
 )
 
 /**
@@ -168,33 +174,44 @@ data class GroupTestAssignment(
 
 /**
  * Модель тестирования, назначенного группе (для отображения пользователям)
+ * 
+ * ВАЖНО: Это DTO/вспомогательная модель для отображения, НЕ сущность БД.
+ * В БД нет таблицы GroupTesting. Эта модель представляет комбинацию:
+ * - Test (тест)
+ * - GroupTestAssignment (назначение теста группе)
+ * - Group (группа) - для получения groupName
+ * 
+ * Поле difficulty не хранится в БД, используется только на клиенте
+ * для определения количества вопросов (easy=10, medium=15, hard=20).
  */
 data class GroupTesting(
-    val id: UUID,
-    val testId: UUID,
-    val groupId: UUID,
-    val groupName: String,
-    val difficulty: String, // "easy", "medium", "hard"
-    val publishedDate: Long, // Unix timestamp в миллисекундах
-    val creatorId: UUID
+    val id: UUID, // ID для локального использования (может быть testId или UUID.randomUUID())
+    val testId: UUID, // Ссылка на Test в БД
+    val groupId: UUID, // Ссылка на Group в БД
+    val groupName: String, // Название группы (для отображения)
+    val difficulty: String, // "easy", "medium", "hard" - локальное поле, не хранится в БД
+    val publishedDate: Long, // Unix timestamp в миллисекундах - локальное поле
+    val creatorId: UUID // ID создателя теста
 )
 
 /**
  * Режим прохождения теста
+ * Значения соответствуют enum TestMode в БД (Training = 1, Exam = 2)
  */
-enum class TestMode {
-    TRAINING, // Режим обучения с подсказками
-    EXAM      // Экзаменационный режим
+enum class TestMode(val value: Int) {
+    TRAINING(1), // Режим обучения с подсказками
+    EXAM(2)      // Экзаменационный режим
 }
 
 /**
  * Категория триажа (медицинская сортировка)
+ * Значения соответствуют enum TriageCategory в БД (Red = 1, Yellow = 2, Green = 3, Black = 4)
  */
-enum class TriageCategory {
-    RED,    // Первая очередь, неотложная помощь
-    YELLOW, // Вторая очередь, срочная помощь
-    GREEN,  // Третья очередь, отложенная помощь
-    BLACK   // Погибшие или агонизирующие
+enum class TriageCategory(val value: Int) {
+    RED(1),    // Первая очередь, неотложная помощь
+    YELLOW(2), // Вторая очередь, срочная помощь
+    GREEN(3),  // Третья очередь, отложенная помощь
+    BLACK(4)   // Погибшие или агонизирующие
 }
 
 /**
