@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -25,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import ru.xaxaton.startrainer.ui.components.BottomCreamWave
 import ru.xaxaton.startrainer.ui.components.TopCreamWave
 import ru.xaxaton.startrainer.ui.theme.CreamWhite
+import ru.xaxaton.startrainer.ui.theme.DarkBurgundy
 import ru.xaxaton.startrainer.ui.theme.STARTrainerTheme
 import ru.xaxaton.startrainer.utils.hashPasswordWithSalt
-import androidx.compose.material.icons.filled.ArrowBack
 import ru.xaxaton.startrainer.data.SimpleUser
 import java.util.UUID
 
@@ -47,6 +48,22 @@ fun RegistrationScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    // ✅ Цвета для TextField БЕЗ обводки и с кремовой меткой при фокусе
+    val fieldColors = TextFieldDefaults.colors(
+        focusedContainerColor = CreamWhite,
+        unfocusedContainerColor = CreamWhite,
+        cursorColor = DarkBurgundy,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedLabelColor = CreamWhite,
+        unfocusedLabelColor = CreamWhite.copy(alpha = 0.7f),
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black,
+        errorCursorColor = Color.Black,
+        errorIndicatorColor = Color.Black,
+        errorLabelColor = Color.Black
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +81,7 @@ fun RegistrationScreen(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Назад",
-                tint = Color.Black,
+                tint = DarkBurgundy,
                 modifier = Modifier.size(48.dp)
             )
         }
@@ -79,20 +96,12 @@ fun RegistrationScreen(
         ) {
             Text(
                 text = "Регистрация",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = CreamWhite
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-
-            val fieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = CreamWhite,
-                unfocusedContainerColor = CreamWhite,
-                cursorColor = Color.Black,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            )
 
             fun validateEmail(email: String): Boolean {
                 if (!Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
@@ -117,7 +126,6 @@ fun RegistrationScreen(
             }
 
             fun validateAndRegister() {
-                // Проверка  полей
                 when {
                     surname.trim().isEmpty() -> {
                         errorMessage = "Фамилия обязательна для заполнения"
@@ -164,19 +172,13 @@ fun RegistrationScreen(
                 }
             }
 
-            OutlinedTextField(
+            // ✅ TextField вместо OutlinedTextField
+            TextField(
                 value = surname,
                 onValueChange = { surname = it },
-                label = {
-                    Text(
-                        text = "Фамилия *",
-                        color = Color.Black
-                    )
-                },
+                label = { Text("Фамилия *", color = Color.Black) },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
                 colors = fieldColors,
                 shape = RoundedCornerShape(12.dp),
@@ -185,19 +187,12 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = {
-                    Text(
-                        text = "Имя *",
-                        color = Color.Black
-                    )
-                },
+                label = { Text("Имя *", color = Color.Black) },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
                 colors = fieldColors,
                 shape = RoundedCornerShape(12.dp),
@@ -206,19 +201,12 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = patronymic,
                 onValueChange = { patronymic = it },
-                label = {
-                    Text(
-                        text = "Отчество",
-                        color = Color.Black.copy(alpha = 0.6f)
-                    )
-                },
+                label = { Text("Отчество", color = Color.Black.copy(alpha = 0.7f)) },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 modifier = Modifier.fillMaxWidth(),
                 colors = fieldColors,
                 shape = RoundedCornerShape(12.dp)
@@ -226,15 +214,10 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = email,
                 onValueChange = { email = it },
-                label = {
-                    Text(
-                        text = "Почта *",
-                        color = Color.Black
-                    )
-                },
+                label = { Text("Почта *", color = Color.Black) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
@@ -250,7 +233,7 @@ fun RegistrationScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = password,
                 onValueChange = {
                     password = it
@@ -259,7 +242,7 @@ fun RegistrationScreen(
                         errorMessage = null
                     }
                 },
-                label = { Text("Пароль *") },
+                label = { Text("Пароль *", color = Color.Black) },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -295,7 +278,11 @@ fun RegistrationScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Зарегистрироваться", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Зарегистрироваться",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = DarkBurgundy
+                )
             }
 
             if (errorMessage != null) {
